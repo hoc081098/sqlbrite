@@ -1,0 +1,20 @@
+name: sqlbrite
+description: sqlbrite
+version: 0.0.1
+author: Petrus Nguyễn Thái Học <hoc081098@gmail.com>
+homepage:
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rxdart: ^0.21.0
+  sqflite: ^1.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
