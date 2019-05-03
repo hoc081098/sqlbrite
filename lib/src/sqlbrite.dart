@@ -54,7 +54,7 @@ abstract class IBriteDatabase {
     List<dynamic> arguments,
   ]);
 
-  Future<T> transactionBrite<T>(Future<T> action(BriteTransaction txn),
+  Future<T> transactionAndTrigger<T>(Future<T> action(BriteTransaction txn),
       {bool exclusive});
 }
 
@@ -301,7 +301,7 @@ class BriteDatabase extends BriteDatabaseExecutor
       _db.transaction(action, exclusive: exclusive);
 
   @override
-  Future<T> transactionBrite<T>(
+  Future<T> transactionAndTrigger<T>(
     Future<T> Function(BriteTransaction txn) action, {
     bool exclusive,
   }) async {

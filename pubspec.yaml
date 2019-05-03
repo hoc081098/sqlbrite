@@ -1,8 +1,8 @@
 name: sqlbrite
 description: sqlbrite
-version: 0.0.1
+version: 1.0.0
 author: Petrus Nguyễn Thái Học <hoc081098@gmail.com>
-homepage:
+homepage: https://github.com/hoc081098/sqlbrite.git
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -16,5 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^4.0.0
+  test_api: ^0.2.4
 
 flutter:
