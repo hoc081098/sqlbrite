@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 import 'package:test_api/test_api.dart' show TypeMatcher;
+import 'package:test_api/test_api.dart' as prefix0;
 
 const typeMatcherQuery = TypeMatcher<Query>();
 
@@ -76,6 +77,55 @@ void main() {
       await briteDb.insert("Table", <String, dynamic>{});
       await expect;
     });
+
+    test(
+      'triggers query multiple time',
+      () async {
+        const table = 'Table';
+        when(db.insert(table, <String, dynamic>{}))
+            .thenAnswer((_) => Future.value(0));
+        var count = 0;
+        when(db.query(table)).thenAnswer(
+          (_) {
+            ++count;
+            return count.isEven
+                ? Future.delayed(
+                    const Duration(seconds: 2),
+                    () => <Map<String, dynamic>>[
+                          {'count': count}
+                        ],
+                  )
+                : null;
+          },
+        );
+
+        final QueryObservable stream$ = briteDb.createQuery(table);
+        final Future<void> ex = expectLater(
+          stream$.mapToOne((r) => r),
+          emitsInOrder([
+            {'count': 2},
+            {'count': 4},
+            {'count': 6},
+            {'count': 8},
+            {'count': 10},
+          ]),
+        );
+
+        briteDb.insert(table, {}); //1
+        briteDb.insert(table, {}); //2
+        briteDb.insert(table, {}); //3
+        briteDb.insert(table, {}); //4
+        briteDb.insert(table, {}); //5
+        briteDb.insert(table, {}); //6
+        briteDb.insert(table, {}); //7
+        briteDb.insert(table, {}); //8
+        briteDb.insert(table, {}); //9
+        briteDb.insert(table, {}); //10
+
+        await ex;
+      },
+      timeout: Timeout(Duration(seconds: 30)),
+    );
 
     test('triggers query again on rawInsertAndTrigger', () async {
       when(db.insert("Table", <String, Object>{}))
@@ -485,6 +535,44 @@ void main() {
 
       await expect;
     });
+
+    test(
+      "trigger query again after batch is commited (multiple operations)",
+      () async {
+        final batch = MockBatch();
+        const table = 'table';
+
+        when(db.batch()).thenAnswer((_) => batch);
+        when(batch.insert(table, <String, Object>{}))
+            .thenAnswer((_) => Future.value(0));
+
+        final QueryObservable stream$ = briteDb.createQuery(table);
+
+        stream$.listen(
+          prefix0.expectAsync1(
+            (v) {
+              expect(v, typeMatcherQuery);
+            },
+            count: 2,
+            max: 2,
+          ),
+        );
+
+        final streamBatch = briteDb.batch();
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        streamBatch.insert(table, <String, dynamic>{});
+        await streamBatch.commit();
+      },
+      timeout: Timeout(Duration(seconds: 10)),
+    );
   });
 }
 

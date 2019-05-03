@@ -503,33 +503,49 @@ class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
         controller.add(mapper(rows[0]));
       }
 
-      controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen(
-            (Query query) {
-              Future<List<Map<String, dynamic>>> newValue;
-              try {
-                newValue = query();
-              } catch (e, s) {
-                controller.addError(e, s);
-                return;
-              }
+      onListen() {
+        subscription = input.listen(
+          (Query event) {
+            Future<List<Map<String, dynamic>>> newValue;
+            try {
+              newValue = event();
+            } catch (e, s) {
+              controller.addError(e, s);
+              return;
+            }
+            if (newValue != null) {
               subscription.pause();
               newValue
-                  ?.then(add, onError: controller.addError)
-                  ?.whenComplete(subscription.resume);
-            },
-            onError: controller.addError,
-            onDone: controller.close,
-            cancelOnError: cancelOnError,
-          );
-        },
-        onPause: subscription.pause,
-        onResume: subscription.resume,
-        onCancel: subscription.cancel,
-      );
+                  .then(add, onError: controller.addError)
+                  .whenComplete(subscription.resume);
+            }
+          },
+          onError: controller.addError,
+          onDone: controller.close,
+        );
+      }
 
+      if (input.isBroadcast) {
+        controller = new StreamController<T>.broadcast(
+          onListen: onListen,
+          onCancel: () {
+            subscription.cancel();
+          },
+          sync: true,
+        );
+      } else {
+        controller = new StreamController<T>(
+          onListen: onListen,
+          onPause: () {
+            subscription.pause();
+          },
+          onResume: () {
+            subscription.resume();
+          },
+          onCancel: () => subscription.cancel(),
+          sync: true,
+        );
+      }
       return controller.stream.listen(null);
     });
   }
@@ -559,32 +575,49 @@ class _QueryToListStreamTransformer<T>
         controller.add(items);
       }
 
-      controller = StreamController<List<T>>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen(
-            (Query query) {
-              Future<List<Map<String, dynamic>>> newValue;
-              try {
-                newValue = query();
-              } catch (e, s) {
-                controller.addError(e, s);
-                return;
-              }
+      onListen() {
+        subscription = input.listen(
+          (Query event) {
+            Future<List<Map<String, dynamic>>> newValue;
+            try {
+              newValue = event();
+            } catch (e, s) {
+              controller.addError(e, s);
+              return;
+            }
+            if (newValue != null) {
               subscription.pause();
               newValue
-                  ?.then(add, onError: controller.addError)
-                  ?.whenComplete(subscription.resume);
-            },
-            onError: controller.addError,
-            onDone: controller.close,
-            cancelOnError: cancelOnError,
-          );
-        },
-        onPause: subscription.pause,
-        onResume: subscription.resume,
-        onCancel: subscription.cancel,
-      );
+                  .then(add, onError: controller.addError)
+                  .whenComplete(subscription.resume);
+            }
+          },
+          onError: controller.addError,
+          onDone: controller.close,
+        );
+      }
+
+      if (input.isBroadcast) {
+        controller = new StreamController<List<T>>.broadcast(
+          onListen: onListen,
+          onCancel: () {
+            subscription.cancel();
+          },
+          sync: true,
+        );
+      } else {
+        controller = new StreamController<List<T>>(
+          onListen: onListen,
+          onPause: () {
+            subscription.pause();
+          },
+          onResume: () {
+            subscription.resume();
+          },
+          onCancel: () => subscription.cancel(),
+          sync: true,
+        );
+      }
 
       return controller.stream.listen(null);
     });
