@@ -35,7 +35,7 @@ void main() {
               () => Future.value([<String, dynamic>{}])
             ],
           ),
-        ).mapToOne((row) => row),
+        ).mapToOneOrDefault((row) => row),
         emits(<String, dynamic>{}),
       );
     });
@@ -123,7 +123,7 @@ void main() {
 
         final QueryObservable stream$ = briteDb.createQuery(table);
         final Future<void> ex = expectLater(
-          stream$.mapToOne((r) => r),
+          stream$.mapToOneOrDefault((r) => r),
           emitsInOrder([
             {'count': 2},
             {'count': 4},

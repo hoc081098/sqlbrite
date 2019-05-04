@@ -9,24 +9,46 @@ typedef Future<List<Map<String, dynamic>>> Query();
 typedef void Logger(String message);
 
 abstract class IBriteDatabaseExecutor {
+  ///
+  /// Execute an SQL query with no return value, and notify
+  /// A notification to queries for [tables] will be sent after the statement is executed.
+  ///
   Future<void> executeAndTrigger(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// Executes a raw SQL DELETE query
+  ///
+  /// Returns the number of changes made
+  /// Only send tables trigger if rows were affected.
+  ///
   Future<int> rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// Execute a raw SQL UPDATE query
+  ///
+  /// Returns the number of changes made
+  /// Only send tables trigger if rows were affected.
+  ///
   Future<int> rawUpdateAndTrigger(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// Execute a raw SQL INSERT query
+  ///
+  /// Returns the last inserted record id
+  /// Only send tables trigger if the insert was successful.
+  ///
   Future<int> rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
@@ -35,6 +57,20 @@ abstract class IBriteDatabaseExecutor {
 }
 
 abstract class IBriteDatabase {
+  ///
+  /// Create an observable which will notify subscribers with a [Query] query for
+  /// execution.
+  ///
+  /// Subscribers will receive an immediate notification for initial data as well as subsequent
+  /// notifications for when the supplied [table] data changes through the operations: insert, update, delete.
+  /// Unsubscribe when you no longer want updates to a query.
+  ///
+  /// Note: To skip the immediate notification and only receive subsequent notifications when data
+  /// has changed call skip(1) on the returned observable.
+  ///
+  /// Warning: this method does not perform the query! Only by subscribing to the returned
+  /// Observable will the operation occur.
+  ///
   QueryObservable createQuery(
     String table, {
     bool distinct,
@@ -48,12 +84,18 @@ abstract class IBriteDatabase {
     int offset,
   });
 
+  /// Like [IBriteDatabase.createQuery]
   QueryObservable createRawQuery(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// Calls in action must only be done using the transaction object
+  /// using the database will trigger a dead-lock
+  /// A notification to queries for tables will be sent after the transaction is executed.
+  ///
   Future<T> transactionAndTrigger<T>(Future<T> action(BriteTransaction txn),
       {bool exclusive});
 }
@@ -215,6 +257,7 @@ class BriteDatabase extends BriteDatabaseExecutor
     _triggers.add(tables.toSet());
   }
 
+  @override
   QueryObservable createQuery(
     String table, {
     bool distinct,
@@ -246,6 +289,7 @@ class BriteDatabase extends BriteDatabaseExecutor
     );
   }
 
+  @override
   QueryObservable createRawQuery(
     Iterable<String> tables,
     String sql, [
@@ -456,14 +500,45 @@ class BriteBatch implements Batch {
 ///
 ///
 ///
-
+///
 class QueryObservable extends Observable<Query> {
   QueryObservable(Stream<Query> stream) : super(stream);
 
-  Observable<T> mapToOne<T>(T mapper(Map<String, dynamic> row),
-          {T defaultValue}) =>
-      super.transform(_QueryToOneStreamTransformer(mapper, defaultValue));
+  ///
+  /// Given a function mapping the current row to T, transform each
+  /// emitted [Query] which returns a single row to T.
+  ///
+  /// It is an error for a query to pass through this operator with more than 1 row in its result
+  /// set. Use `LIMIT 1` on the underlying SQL query to prevent this. Result sets with 0 rows
+  /// emit [defaultValue].
+  ///
+  Observable<T> mapToOneOrDefault<T>(
+    T mapper(Map<String, dynamic> row), {
+    T defaultValue,
+  }) =>
+      super.transform(
+        _QueryToOneStreamTransformer(
+          mapper,
+          true,
+          defaultValue: defaultValue,
+        ),
+      );
 
+  ///
+  /// Given a function mapping the current row to T, transform each
+  /// emitted [Query] which returns a single row to T.
+  ///
+  /// It is an error for a query to pass through this operator with more than 1 row in its result
+  /// set. Use `LIMIT 1` on the underlying SQL query to prevent this. Result sets with 0 rows
+  /// do not emit an item.
+  ///
+  Observable<T> mapToOne<T>(T mapper(Map<String, dynamic> row)) =>
+      super.transform(_QueryToOneStreamTransformer(mapper, false));
+
+  ///
+  /// Given a function mapping the current row to T, transform each
+  /// emitted [Query] to a [List<T].
+  ///
   Observable<List<T>> mapToList<T>(T mapper(Map<String, dynamic> row)) =>
       super.transform(_QueryToListStreamTransformer(mapper));
 }
@@ -472,8 +547,11 @@ class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
   final StreamTransformer<Query, T> _transformer;
 
   _QueryToOneStreamTransformer(
-      T mapper(Map<String, dynamic> row), T defaultValue)
-      : _transformer = _buildTransformer(mapper, defaultValue);
+      T mapper(Map<String, dynamic> row), bool emitDefault,
+      {T defaultValue})
+      : assert(mapper != null),
+        assert(emitDefault != null),
+        _transformer = _buildTransformer(mapper, defaultValue, emitDefault);
 
   @override
   Stream<T> bind(Stream<Query> stream) => _transformer.bind(stream);
@@ -481,6 +559,7 @@ class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
   static StreamTransformer<Query, T> _buildTransformer<T>(
     T mapper(Map<String, dynamic> row),
     T defaultValue,
+    bool emitDefault,
   ) {
     return StreamTransformer<Query, T>((
       Stream<Query> input,
@@ -494,11 +573,14 @@ class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
           controller.addError(StateError('Query returned more than 1 row'));
           return;
         }
+
         if (rows.isEmpty) {
-          controller.add(defaultValue);
-          return;
+          if (emitDefault) {
+            controller.add(defaultValue);
+          }
+        } else {
+          controller.add(mapper(rows[0]));
         }
-        controller.add(mapper(rows[0]));
       }
 
       onListen() {
