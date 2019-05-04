@@ -19,6 +19,28 @@ void main() {
     briteDb = BriteDatabase(db);
   });
 
+  group('$QueryObservable', () {
+    test('Create $QueryObservable from $Stream', () async {
+      await expectLater(
+        QueryObservable(Stream.empty()),
+        emitsDone,
+      );
+    });
+
+    test('Create $QueryObservable from $Stream', () async {
+      await expectLater(
+        QueryObservable(
+          Stream<Query>.fromIterable(
+            [
+              () => Future.value([<String, dynamic>{}])
+            ],
+          ),
+        ).mapToOne((row) => row),
+        emits(<String, dynamic>{}),
+      );
+    });
+  });
+
   group('createQuery', () {
     test('delegates to db query', () async {
       final stream$ = briteDb.createQuery(

@@ -458,16 +458,14 @@ class BriteBatch implements Batch {
 ///
 
 class QueryObservable extends Observable<Query> {
-  final Stream<Query> _stream;
-
-  QueryObservable(this._stream) : super(_stream);
+  QueryObservable(Stream<Query> stream) : super(stream);
 
   Observable<T> mapToOne<T>(T mapper(Map<String, dynamic> row),
           {T defaultValue}) =>
-      _stream.transform(_QueryToOneStreamTransformer(mapper, defaultValue));
+      super.transform(_QueryToOneStreamTransformer(mapper, defaultValue));
 
   Observable<List<T>> mapToList<T>(T mapper(Map<String, dynamic> row)) =>
-      _stream.transform(_QueryToListStreamTransformer(mapper));
+      super.transform(_QueryToListStreamTransformer(mapper));
 }
 
 class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
