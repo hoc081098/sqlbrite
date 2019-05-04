@@ -16,7 +16,7 @@ Getting Started
 ```yaml
 dependencies:
   ...
-  sqlbrite: ^1.0.1
+  sqlbrite: ^1.1.0
 ```
 
 2.  Install it: You can install packages from the command line with Flutter:
