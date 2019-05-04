@@ -517,7 +517,7 @@ class QueryObservable extends Observable<Query> {
     T defaultValue,
   }) =>
       super.transform(
-        _QueryToOneStreamTransformer(
+        QueryToOneStreamTransformer(
           mapper,
           true,
           defaultValue: defaultValue,
@@ -533,20 +533,20 @@ class QueryObservable extends Observable<Query> {
   /// do not emit an item.
   ///
   Observable<T> mapToOne<T>(T mapper(Map<String, dynamic> row)) =>
-      super.transform(_QueryToOneStreamTransformer(mapper, false));
+      super.transform(QueryToOneStreamTransformer(mapper, false));
 
   ///
   /// Given a function mapping the current row to T, transform each
   /// emitted [Query] to a [List<T].
   ///
   Observable<List<T>> mapToList<T>(T mapper(Map<String, dynamic> row)) =>
-      super.transform(_QueryToListStreamTransformer(mapper));
+      super.transform(QueryToListStreamTransformer(mapper));
 }
 
-class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
+class QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
   final StreamTransformer<Query, T> _transformer;
 
-  _QueryToOneStreamTransformer(
+  QueryToOneStreamTransformer(
       T mapper(Map<String, dynamic> row), bool emitDefault,
       {T defaultValue})
       : assert(mapper != null),
@@ -631,11 +631,11 @@ class _QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
   }
 }
 
-class _QueryToListStreamTransformer<T>
+class QueryToListStreamTransformer<T>
     extends StreamTransformerBase<Query, List<T>> {
   final StreamTransformer<Query, List<T>> _transformer;
 
-  _QueryToListStreamTransformer(T mapper(Map<String, dynamic> row))
+  QueryToListStreamTransformer(T mapper(Map<String, dynamic> row))
       : _transformer = _buildTransformer(mapper);
 
   @override
