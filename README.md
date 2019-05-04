@@ -1,14 +1,34 @@
-# sqlbrite
+SQL Brite ![alt text](https://avatars3.githubusercontent.com/u/6407041?s=32&v=4)
+=========
 
-sqlbrite
+[![Pub](https://img.shields.io/pub/vpre/sqlbrite.svg)](https://pub.dartlang.org/packages/sqlbrite)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+sqlbrite for flutter - A lightweight wrapper around sqflite which introduces reactive stream semantics to SQL operations
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Getting Started
+-----
+
+1. Depend on it: In your flutter project, add the dependency to your `pubspec.yaml`
+
+```yaml
+dependencies:
+  ...
+  sqlbrite: ^1.0.1
+```
+
+2.  Install it: You can install packages from the command line with Flutter:
+
+```
+$ flutter packages get
+```
+
+3. Import it: Now in your Dart code, you can use:
+
+```dart
+import 'package:sqlbrite/sqlbrite.dart';
+```
+
+Usage
+-----
