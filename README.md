@@ -3,6 +3,7 @@ SQL Brite ![alt text](https://avatars3.githubusercontent.com/u/6407041?s=32&v=4)
 
 [![Pub](https://img.shields.io/pub/vpre/sqlbrite.svg)](https://pub.dartlang.org/packages/sqlbrite)
 [![Build Status](https://travis-ci.org/hoc081098/sqlbrite.svg?branch=master)](https://travis-ci.org/hoc081098/sqlbrite)
+[![codecov](https://codecov.io/gh/hoc081098/sqlbrite/branch/master/graph/badge.svg)](https://codecov.io/gh/hoc081098/sqlbrite)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
