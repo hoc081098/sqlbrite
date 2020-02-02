@@ -1,14 +1,14 @@
-@Timeout(const Duration(seconds: 2))
+@Timeout(Duration(seconds: 2))
 import 'dart:async';
 
 import "package:flutter_test/flutter_test.dart";
 import 'package:mockito/mockito.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart';
-import 'package:test_api/test_api.dart' show TypeMatcher;
-import 'package:test_api/test_api.dart' as prefix0;
+import 'package:sqlbrite/src/brite_database.dart';
+import 'package:sqlbrite/src/query_stream.dart';
 
-const typeMatcherQuery = TypeMatcher<Query>();
+final typeMatcherQuery = isInstanceOf<Query>();
 
 void main() {
   Database db;
@@ -19,23 +19,11 @@ void main() {
     briteDb = BriteDatabase(db);
   });
 
-  group('$QueryObservable', () {
-    test('Create $QueryObservable from $Stream', () async {
+  group('Stream<Query>', () {
+    test('Create Querytream from $Stream', () async {
       await expectLater(
-        QueryObservable(Stream.empty()),
-        emitsDone,
-      );
-    });
-
-    test('Create $QueryObservable from $Stream', () async {
-      await expectLater(
-        QueryObservable(
-          Stream<Query>.fromIterable(
-            [
-              () => Future.value([<String, dynamic>{}])
-            ],
-          ),
-        ).mapToOneOrDefault((row) => row),
+        Stream<Query>.value(() => Future.value([<String, dynamic>{}]))
+            .mapToOneOrDefault((row) => row),
         emits(<String, dynamic>{}),
       );
     });
@@ -55,7 +43,7 @@ void main() {
         limit: 1,
         offset: 1,
       );
-      (await stream$.first)();
+      await (await stream$.first)();
 
       /// execute [Query]
 
@@ -76,7 +64,7 @@ void main() {
     });
 
     test('triggers intial query', () async {
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       expect(
         stream$,
         emits(typeMatcherQuery),
@@ -87,7 +75,7 @@ void main() {
       when(db.insert("Table", <String, dynamic>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -114,14 +102,14 @@ void main() {
                 ? Future.delayed(
                     const Duration(seconds: 2),
                     () => <Map<String, dynamic>>[
-                          {'count': count}
-                        ],
+                      {'count': count}
+                    ],
                   )
                 : null;
           },
         );
 
-        final QueryObservable stream$ = briteDb.createQuery(table);
+        final stream$ = briteDb.createQuery(table);
         final Future<void> ex = expectLater(
           stream$.mapToOneOrDefault((r) => r),
           emitsInOrder([
@@ -133,16 +121,16 @@ void main() {
           ]),
         );
 
-        briteDb.insert(table, {}); //1
-        briteDb.insert(table, {}); //2
-        briteDb.insert(table, {}); //3
-        briteDb.insert(table, {}); //4
-        briteDb.insert(table, {}); //5
-        briteDb.insert(table, {}); //6
-        briteDb.insert(table, {}); //7
-        briteDb.insert(table, {}); //8
-        briteDb.insert(table, {}); //9
-        briteDb.insert(table, {}); //10
+        await briteDb.insert(table, {}); //1
+        await briteDb.insert(table, {}); //2
+        await briteDb.insert(table, {}); //3
+        await briteDb.insert(table, {}); //4
+        await briteDb.insert(table, {}); //5
+        await briteDb.insert(table, {}); //6
+        await briteDb.insert(table, {}); //7
+        await briteDb.insert(table, {}); //8
+        await briteDb.insert(table, {}); //9
+        await briteDb.insert(table, {}); //10
 
         await ex;
       },
@@ -153,7 +141,7 @@ void main() {
       when(db.insert("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -169,7 +157,7 @@ void main() {
     test("triggers query again on delete", () async {
       when(db.delete("Table")).thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -185,7 +173,7 @@ void main() {
     test('triggers query again on rawDeleteAndTrigger', () async {
       when(db.rawDelete("")).thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -201,7 +189,7 @@ void main() {
     test('triggers query again on update', () async {
       when(db.update("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(1));
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -217,7 +205,7 @@ void main() {
     test('triggers query again on rawUpdateAndTrigger', () async {
       when(db.rawUpdate("")).thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -233,7 +221,7 @@ void main() {
     test("triggers query again on executeAndTrigger", () async {
       when(db.execute("")).thenAnswer((_) => Future<int>.value(0));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -254,7 +242,7 @@ void main() {
         "sql",
         ["whereArg"],
       );
-      (await stream.first)();
+      await (await stream.first)();
 
       verify(
         db.rawQuery(
@@ -273,7 +261,7 @@ void main() {
       when(db.insert("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -290,7 +278,7 @@ void main() {
       when(db.insert("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -306,7 +294,7 @@ void main() {
     test("triggers query again on delete", () async {
       when(db.delete("Table")).thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -322,7 +310,7 @@ void main() {
     test("triggers query again on rawDeleteAndTrigger", () async {
       when(db.rawDelete("")).thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -339,7 +327,7 @@ void main() {
       when(db.update("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(1));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -371,7 +359,7 @@ void main() {
     test("triggers query again on executeAndTrigger", () async {
       when(db.execute("")).thenAnswer((_) => Future<int>.value(0));
 
-      final QueryObservable stream$ = briteDb.createRawQuery(["Table"], "");
+      final stream$ = briteDb.createRawQuery(["Table"], "");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -451,29 +439,23 @@ void main() {
     });
 
     test("delegates to db rawDelete", () async {
-      when(db.rawDelete(
-              // ignore: argument_type_not_assignable
-              any,
-              // ignore: argument_type_not_assignable
-              any))
-          .thenAnswer((_) => Future.value(1));
+      when(
+        db.rawDelete(any, any),
+      ).thenAnswer((_) => Future.value(1));
       await briteDb.rawDeleteAndTrigger(["Table"], "sql", ["arg"]);
       verify(db.rawDelete("sql", <dynamic>["arg"]));
     });
 
     test("delegates to db update", () async {
-      when(db.update(
-              // ignore: argument_type_not_assignable
-              any,
-              // ignore: argument_type_not_assignable
-              any,
-              // ignore: argument_type_not_assignable
-              where: anyNamed("where"),
-              // ignore: argument_type_not_assignable
-              whereArgs: anyNamed("whereArgs"),
-              // ignore: argument_type_not_assignable
-              conflictAlgorithm: anyNamed("conflictAlgorithm")))
-          .thenAnswer((_) => Future.value(1));
+      when(
+        db.update(
+          any,
+          any,
+          where: anyNamed("where"),
+          whereArgs: anyNamed("whereArgs"),
+          conflictAlgorithm: anyNamed("conflictAlgorithm"),
+        ),
+      ).thenAnswer((_) => Future.value(1));
       await briteDb.update("Table", {},
           where: "where",
           whereArgs: ["whereArg"],
@@ -514,12 +496,12 @@ void main() {
           exclusive: anyNamed("exclusive"),
         ),
       ).thenAnswer((invocation) {
-        Function f = invocation.positionalArguments[0] as Function;
-        Future<int> result = f(transaction) as Future<int>;
+        final Function f = invocation.positionalArguments[0] as Function;
+        final Future<int> result = f(transaction) as Future<int>;
         return result;
       });
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -542,7 +524,7 @@ void main() {
       when(batch.insert("Table", <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final QueryObservable stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery("Table");
       final Future<void> expect = expectLater(
         stream$,
         emitsInOrder([
@@ -568,10 +550,10 @@ void main() {
         when(batch.insert(table, <String, Object>{}))
             .thenAnswer((_) => Future.value(0));
 
-        final QueryObservable stream$ = briteDb.createQuery(table);
+        final stream$ = briteDb.createQuery(table);
 
         stream$.listen(
-          prefix0.expectAsync1(
+          expectAsync1(
             (v) {
               expect(v, typeMatcherQuery);
             },
