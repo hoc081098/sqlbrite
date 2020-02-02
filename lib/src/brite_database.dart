@@ -119,14 +119,18 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
     Future<T> Function(BriteTransaction txn) action, {
     bool exclusive,
   }) async {
-    final tables = <String>{};
+    Set<String> tables;
+
     final T result = await _db.transaction(
-      (txn) {
-        final briteTransaction = BriteTransaction(txn, tables);
-        return action(briteTransaction);
+      (txn) async {
+        final briteTransaction = BriteTransaction(txn);
+        final result = await action(briteTransaction);
+        tables = briteTransaction.tables;
+        return result;
       },
       exclusive: exclusive,
     );
+
     sendTableTrigger(tables);
     return result;
   }
