@@ -50,21 +50,27 @@ class Entity {
   factory Entity.fromJson(Map<String, dynamic> map) {
     return Entity(...);
   }
+  
+  factory Entity.default() {
+    return Entity(...);
+  }
 }
 
 // Emits a single row, doesn't emit if the row dosen't exist, emit error if more than 1 row in result set
 final Observable<Entity> singleQuery$ = briteDb.createQuery(
   'table',
-  where: 'id = ? LIMIT 1',
+  where: 'id = ?',
   whereArgs: [id],
+  limit: 1,
 ).mapToOne((row) => Entity.fromJson(row));
 
 // Emits a single row, or the given default value if the row doesn't exist, or emit error if more than 1 row in result set
 final Observable<Entity> singleOrDefaultQuery$ = briteDb.createQuery(
   'table',
-  where: 'id = ? LIMIT 1',
+  where: 'id = ?',
   whereArgs: [id],
-).mapToOneOrDefault((row) => Entity.fromJson(row));
+  limit: 1,
+).mapToOneOrDefault((row) => Entity.fromJson(row), Entity.default());
 
 // Emits a list of rows.
 final Observable<List<Entity>> listQuery$ = briteDb.createQuery(
