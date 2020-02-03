@@ -5,8 +5,6 @@
 library sqlbrite;
 
 export 'src/api.dart';
-export 'src/brite_batch.dart';
 export 'src/brite_database.dart';
-export 'src/brite_transaction.dart';
 export 'src/query_stream.dart';
 export 'src/type_defs.dart';

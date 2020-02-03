@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../../sqlbrite.dart';
+import '../type_defs.dart';
 
 ///
 class QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
@@ -11,9 +11,7 @@ class QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
     T Function(Map<String, dynamic> row) mapper,
     bool emitDefault, {
     T defaultValue,
-  })  : assert(mapper != null),
-        assert(emitDefault != null),
-        _transformer = _buildTransformer(mapper, defaultValue, emitDefault);
+  }) : _transformer = _buildTransformer(mapper, defaultValue, emitDefault);
 
   @override
   Stream<T> bind(Stream<Query> stream) => _transformer.bind(stream);
@@ -23,14 +21,14 @@ class QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
     T defaultValue,
     bool emitDefault,
   ) {
-    return StreamTransformer<Query, T>((
-      Stream<Query> input,
-      bool cancelOnError,
-    ) {
+    ArgumentError.checkNotNull(mapper, 'mapper');
+    ArgumentError.checkNotNull(emitDefault, 'emitDefault');
+
+    return StreamTransformer<Query, T>((input, cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<Query> subscription;
 
-      add(List<Map<String, dynamic>> rows) {
+      void add(List<Map<String, dynamic>> rows) {
         if (rows.length > 1) {
           controller.addError(StateError('Query returned more than 1 row'));
           return;
@@ -39,13 +37,20 @@ class QueryToOneStreamTransformer<T> extends StreamTransformerBase<Query, T> {
         if (rows.isEmpty) {
           if (emitDefault) {
             controller.add(defaultValue);
+          } else {
+            // TODO: Should throw error when rows is empty and not emit default
+            // TODO: Current do nothing
           }
         } else {
-          controller.add(mapper(rows[0]));
+          try {
+            controller.add(mapper(rows.first));
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
         }
       }
 
-      onListen() {
+      void onListen() {
         subscription = input.listen(
           (Query event) {
             Future<List<Map<String, dynamic>>> newValue;

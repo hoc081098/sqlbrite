@@ -109,19 +109,19 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
 
   @override
   Future<T> transaction<T>(
-    Future<T> action(sqlite_api.Transaction txn), {
+    Future<T> Function(sqlite_api.Transaction txn) action, {
     bool exclusive,
   }) =>
       _db.transaction(action, exclusive: exclusive);
 
   @override
   Future<T> transactionAndTrigger<T>(
-    Future<T> Function(BriteTransaction txn) action, {
+    Future<T> Function(sqlite_api.Transaction txn) action, {
     bool exclusive,
   }) async {
     Set<String> tables;
 
-    final T result = await _db.transaction(
+    final result = await _db.transaction(
       (txn) async {
         final briteTransaction = BriteTransaction(txn);
         final result = await action(briteTransaction);

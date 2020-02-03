@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../../sqlbrite.dart';
+import '../type_defs.dart';
 
 ///
 class QueryToListStreamTransformer<T>
@@ -17,6 +17,8 @@ class QueryToListStreamTransformer<T>
   static StreamTransformer<Query, List<T>> _buildTransformer<T>(
     T Function(Map<String, dynamic> row) mapper,
   ) {
+    ArgumentError.checkNotNull(mapper, 'mapper');
+
     return StreamTransformer<Query, List<T>>((
       Stream<Query> input,
       bool cancelOnError,
@@ -24,12 +26,16 @@ class QueryToListStreamTransformer<T>
       StreamController<List<T>> controller;
       StreamSubscription<Query> subscription;
 
-      add(List<Map<String, dynamic>> rows) {
-        final items = rows.map((row) => mapper(row)).toList(growable: false);
-        controller.add(items);
+      void add(List<Map<String, dynamic>> rows) {
+        try {
+          final items = rows.map((row) => mapper(row)).toList(growable: false);
+          controller.add(items);
+        } catch (e, s) {
+          controller.addError(e, s);
+        }
       }
 
-      onListen() {
+      void onListen() {
         subscription = input.listen(
           (Query event) {
             Future<List<Map<String, dynamic>>> newValue;

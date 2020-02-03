@@ -3,7 +3,6 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import '../sqlbrite.dart';
 import 'brite_batch.dart';
-import 'brite_transaction.dart';
 
 ///
 abstract class IBriteDatabase implements sqlite_api.Database {
@@ -47,7 +46,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   /// A notification to queries for tables will be sent after the transaction is executed.
   ///
   Future<T> transactionAndTrigger<T>(
-    Future<T> action(BriteTransaction txn), {
+    Future<T> Function(sqlite_api.Transaction txn) action, {
     bool exclusive,
   });
 }
@@ -132,7 +131,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  BriteBatch batch() => BriteBatch(this, _delegate.batch());
+  sqlite_api.Batch batch() => BriteBatch(this, _delegate.batch());
 
   @override
   Future<int> delete(
@@ -140,8 +139,11 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     String where,
     List<dynamic> whereArgs,
   }) async {
-    final int rows =
-        await _delegate.delete(table, where: where, whereArgs: whereArgs);
+    final rows = await _delegate.delete(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+    );
     if (rows > 0) {
       sendTableTrigger({table});
     }
@@ -158,7 +160,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     String sql, [
     List<dynamic> arguments,
   ]) async {
-    final int rows = await rawDelete(sql, arguments);
+    final rows = await rawDelete(sql, arguments);
     if (rows > 0) {
       sendTableTrigger(tables);
     }
@@ -173,7 +175,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     List<dynamic> whereArgs,
     sqlite_api.ConflictAlgorithm conflictAlgorithm,
   }) async {
-    final int rows = await _delegate.update(
+    final rows = await _delegate.update(
       table,
       values,
       where: where,
@@ -196,7 +198,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     String sql, [
     List<dynamic> arguments,
   ]) async {
-    final int rows = await rawUpdate(sql, arguments);
+    final rows = await rawUpdate(sql, arguments);
     if (rows > 0) {
       sendTableTrigger(tables);
     }
@@ -244,7 +246,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     String nullColumnHack,
     sqlite_api.ConflictAlgorithm conflictAlgorithm,
   }) async {
-    final int id = await _delegate.insert(
+    final id = await _delegate.insert(
       table,
       values,
       nullColumnHack: nullColumnHack,
@@ -266,7 +268,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     String sql, [
     List<dynamic> arguments,
   ]) async {
-    final int id = await rawInsert(sql, arguments);
+    final id = await rawInsert(sql, arguments);
     if (id != -1) {
       sendTableTrigger(tables);
     }

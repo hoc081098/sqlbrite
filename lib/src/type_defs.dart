@@ -1,7 +1,7 @@
 import 'dart:async';
 
 ///
-typedef Future<List<Map<String, dynamic>>> Query();
+typedef Query = Future<List<Map<String, dynamic>>> Function();
 
 ///
-typedef void Logger(String message);
+typedef Logger = void Function(String message);

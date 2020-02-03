@@ -15,7 +15,7 @@ extension MapToOneOrDefaultQueryStreamExtensions on Stream<Query> {
   /// emit [defaultValue].
   ///
   Stream<T> mapToOneOrDefault<T>(
-    T mapper(Map<String, dynamic> row), {
+    T Function(Map<String, dynamic> row) mapper, {
     T defaultValue,
   }) =>
       transform(
@@ -37,7 +37,7 @@ extension MapToOneQueryStreamExtensions on Stream<Query> {
   /// set. Use `LIMIT 1` on the underlying SQL query to prevent this. Result sets with 0 rows
   /// do not emit an item.
   ///
-  Stream<T> mapToOne<T>(T mapper(Map<String, dynamic> row)) =>
+  Stream<T> mapToOne<T>(T Function(Map<String, dynamic> row) mapper) =>
       transform(QueryToOneStreamTransformer(mapper, false));
 }
 
@@ -47,6 +47,6 @@ extension MapToListQueryStreamExtensions on Stream<Query> {
   /// Given a function mapping the current row to T, transform each
   /// emitted [Query] to a [List<T].
   ///
-  Stream<List<T>> mapToList<T>(T mapper(Map<String, dynamic> row)) =>
+  Stream<List<T>> mapToList<T>(T Function(Map<String, dynamic> row) mapper) =>
       transform(QueryToListStreamTransformer(mapper));
 }

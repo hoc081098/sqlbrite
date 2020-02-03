@@ -17,7 +17,7 @@ class BriteBatch implements sqlite_api.Batch {
     bool noResult,
     bool continueOnError,
   }) async {
-    final List list = await _delegate.commit(
+    final list = await _delegate.commit(
       exclusive: exclusive,
       noResult: noResult,
       continueOnError: continueOnError,

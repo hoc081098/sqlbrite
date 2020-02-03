@@ -1,14 +1,17 @@
 @Timeout(Duration(seconds: 2))
 import 'dart:async';
 
-import "package:flutter_test/flutter_test.dart";
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 import 'package:sqlbrite/src/brite_database.dart';
 import 'package:sqlbrite/src/query_stream.dart';
 
-final typeMatcherQuery = isInstanceOf<Query>();
+import 'mocks.dart';
+import 'query_stream_test.dart' as query_stream_test;
+
+final isQuery = isInstanceOf<Query>();
 
 void main() {
   Database db;
@@ -19,27 +22,19 @@ void main() {
     briteDb = BriteDatabase(db);
   });
 
-  group('Stream<Query>', () {
-    test('Create Querytream from $Stream', () async {
-      await expectLater(
-        Stream<Query>.value(() => Future.value([<String, dynamic>{}]))
-            .mapToOneOrDefault((row) => row),
-        emits(<String, dynamic>{}),
-      );
-    });
-  });
+  query_stream_test.main();
 
   group('createQuery', () {
     test('delegates to db query', () async {
       final stream$ = briteDb.createQuery(
-        "Table",
+        'Table',
         distinct: true,
-        columns: ["column"],
-        where: "where",
-        whereArgs: ["whereArg"],
-        groupBy: "groupBy",
-        having: "having",
-        orderBy: "orderBy",
+        columns: ['column'],
+        where: 'where',
+        whereArgs: ['whereArg'],
+        groupBy: 'groupBy',
+        having: 'having',
+        orderBy: 'orderBy',
         limit: 1,
         offset: 1,
       );
@@ -49,14 +44,14 @@ void main() {
 
       verify(
         db.query(
-          "Table",
+          'Table',
           distinct: true,
-          columns: ["column"],
-          where: "where",
-          whereArgs: <dynamic>["whereArg"],
-          groupBy: "groupBy",
-          having: "having",
-          orderBy: "orderBy",
+          columns: ['column'],
+          where: 'where',
+          whereArgs: ['whereArg'],
+          groupBy: 'groupBy',
+          having: 'having',
+          orderBy: 'orderBy',
           limit: 1,
           offset: 1,
         ),
@@ -64,27 +59,27 @@ void main() {
     });
 
     test('triggers intial query', () async {
-      final stream$ = briteDb.createQuery("Table");
+      final stream$ = briteDb.createQuery('Table');
       expect(
         stream$,
-        emits(typeMatcherQuery),
+        emits(isQuery),
       );
     });
 
     test('triggers query again on insert', () async {
-      when(db.insert("Table", <String, dynamic>{}))
+      when(db.insert('Table', <String, dynamic>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.insert("Table", <String, dynamic>{});
+      await briteDb.insert('Table', <String, dynamic>{});
       await expect;
     });
 
@@ -110,7 +105,7 @@ void main() {
         );
 
         final stream$ = briteDb.createQuery(table);
-        final Future<void> ex = expectLater(
+        final ex = expectLater(
           stream$.mapToOneOrDefault((r) => r),
           emitsInOrder([
             {'count': 2},
@@ -138,99 +133,99 @@ void main() {
     );
 
     test('triggers query again on rawInsertAndTrigger', () async {
-      when(db.insert("Table", <String, Object>{}))
+      when(db.insert('Table', <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawInsertAndTrigger(["Table"], "");
+      await briteDb.rawInsertAndTrigger(['Table'], '');
       await expect;
     });
 
-    test("triggers query again on delete", () async {
-      when(db.delete("Table")).thenAnswer((_) => Future.value(1));
+    test('triggers query again on delete', () async {
+      when(db.delete('Table')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.delete("Table");
+      await briteDb.delete('Table');
       await expect;
     });
 
     test('triggers query again on rawDeleteAndTrigger', () async {
-      when(db.rawDelete("")).thenAnswer((_) => Future.value(1));
+      when(db.rawDelete('')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawDeleteAndTrigger(["Table"], "");
+      await briteDb.rawDeleteAndTrigger(['Table'], '');
       await expect;
     });
 
     test('triggers query again on update', () async {
-      when(db.update("Table", <String, Object>{}))
+      when(db.update('Table', <String, Object>{}))
           .thenAnswer((_) => Future.value(1));
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.update("Table", {});
+      await briteDb.update('Table', {});
       await expect;
     });
 
     test('triggers query again on rawUpdateAndTrigger', () async {
-      when(db.rawUpdate("")).thenAnswer((_) => Future.value(1));
+      when(db.rawUpdate('')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawUpdateAndTrigger(["Table"], "");
+      await briteDb.rawUpdateAndTrigger(['Table'], '');
       await expect;
     });
 
-    test("triggers query again on executeAndTrigger", () async {
-      when(db.execute("")).thenAnswer((_) => Future<int>.value(0));
+    test('triggers query again on executeAndTrigger', () async {
+      when(db.execute('')).thenAnswer((_) => Future<int>.value(0));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.executeAndTrigger(["Table"], "");
+      await briteDb.executeAndTrigger(['Table'], '');
       await expect;
     });
   });
@@ -238,310 +233,347 @@ void main() {
   group('createRawQuery', () {
     test('delegates to db rawQuery', () async {
       final stream = briteDb.createRawQuery(
-        ["Table"],
-        "sql",
-        ["whereArg"],
+        ['Table'],
+        'sql',
+        ['whereArg'],
       );
       await (await stream.first)();
 
       verify(
         db.rawQuery(
-          "sql",
-          <dynamic>["whereArg"],
+          'sql',
+          ['whereArg'],
         ),
       ).called(1);
     });
 
     test('triggers intial query', () async {
-      final stream = briteDb.createRawQuery(["Table"], "");
-      await expectLater(stream, emitsInOrder([typeMatcherQuery]));
+      final stream = briteDb.createRawQuery(['Table'], '');
+      await expectLater(stream, emitsInOrder([isQuery]));
     });
 
-    test("triggers query again on insert", () async {
-      when(db.insert("Table", <String, Object>{}))
+    test('triggers query again on insert', () async {
+      when(db.insert('Table', <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.insert("Table", <String, Object>{});
+      await briteDb.insert('Table', <String, Object>{});
       await expect;
     });
 
-    test("triggers query again on rawInsertAndTrigger", () async {
-      when(db.insert("Table", <String, Object>{}))
+    test('triggers query again on rawInsertAndTrigger', () async {
+      when(db.insert('Table', <String, Object>{}))
           .thenAnswer((_) => Future.value(0));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawInsertAndTrigger(["Table"], "");
+      await briteDb.rawInsertAndTrigger(['Table'], '');
       await expect;
     });
 
-    test("triggers query again on delete", () async {
-      when(db.delete("Table")).thenAnswer((_) => Future.value(1));
+    test('triggers query again on delete', () async {
+      when(db.delete('Table')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.delete("Table");
+      await briteDb.delete('Table');
       await expect;
     });
 
-    test("triggers query again on rawDeleteAndTrigger", () async {
-      when(db.rawDelete("")).thenAnswer((_) => Future.value(1));
+    test('triggers query again on rawDeleteAndTrigger', () async {
+      when(db.rawDelete('')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawDeleteAndTrigger(["Table"], "");
+      await briteDb.rawDeleteAndTrigger(['Table'], '');
       await expect;
     });
 
-    test("triggers query again on update", () async {
-      when(db.update("Table", <String, Object>{}))
+    test('triggers query again on update', () async {
+      when(db.update('Table', <String, Object>{}))
           .thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.update("Table", {});
+      await briteDb.update('Table', {});
       await expect;
     });
 
-    test("triggers query again on rawUpdateAndTrigger", () async {
-      when(db.rawUpdate("")).thenAnswer((_) => Future.value(1));
+    test('triggers query again on rawUpdateAndTrigger', () async {
+      when(db.rawUpdate('')).thenAnswer((_) => Future.value(1));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.rawUpdateAndTrigger(["Table"], "");
+      await briteDb.rawUpdateAndTrigger(['Table'], '');
       await expect;
     });
 
-    test("triggers query again on executeAndTrigger", () async {
-      when(db.execute("")).thenAnswer((_) => Future<int>.value(0));
+    test('triggers query again on executeAndTrigger', () async {
+      when(db.execute('')).thenAnswer((_) => Future<int>.value(0));
 
-      final stream$ = briteDb.createRawQuery(["Table"], "");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createRawQuery(['Table'], '');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
-      await briteDb.executeAndTrigger(["Table"], "");
+      await briteDb.executeAndTrigger(['Table'], '');
       await expect;
     });
   });
 
-  group("Delegates to db", () {
-    test("delegates to db query", () async {
+  group('Delegates to db', () {
+    test('delegates to db query', () async {
       await briteDb.query(
-        "Table",
+        'Table',
         distinct: true,
-        columns: ["column"],
-        where: "where",
-        whereArgs: ["whereArg"],
-        groupBy: "groupBy",
-        having: "having",
-        orderBy: "orderBy",
+        columns: ['column'],
+        where: 'where',
+        whereArgs: ['whereArg'],
+        groupBy: 'groupBy',
+        having: 'having',
+        orderBy: 'orderBy',
         limit: 1,
         offset: 1,
       );
-      verify(db.query(
-        "Table",
-        distinct: true,
-        columns: ["column"],
-        where: "where",
-        whereArgs: <dynamic>["whereArg"],
-        groupBy: "groupBy",
-        having: "having",
-        orderBy: "orderBy",
-        limit: 1,
-        offset: 1,
-      ));
-    });
-
-    test("delegates to db rawQuery", () async {
-      await briteDb.rawQuery(
-        "sql",
-        <String>["whereArg"],
-      );
-      verify(db.rawQuery(
-        "sql",
-        <dynamic>["whereArg"],
-      ));
-    });
-
-    test("delegates to db insert", () async {
-      await briteDb.insert("Table", <String, Object>{},
-          conflictAlgorithm: ConflictAlgorithm.fail);
-      verify(db.insert("Table", <String, dynamic>{},
-          conflictAlgorithm: ConflictAlgorithm.fail));
-    });
-
-    test("delegates to db rawInsert", () async {
-      await briteDb.rawInsertAndTrigger(["Table"], "sql", <String>["arg"]);
-      verify(db.rawInsert("sql", <dynamic>["arg"]));
-    });
-
-    test("delegates to db delete", () async {
-      when(db.delete(
-              // ignore: argument_type_not_assignable
-              any,
-              // ignore: argument_type_not_assignable
-              where: anyNamed("where"),
-              // ignore: argument_type_not_assignable
-              whereArgs: anyNamed("whereArgs")))
-          .thenAnswer((_) => Future.value(1));
-      await briteDb.delete("Table", where: "where", whereArgs: ["whereArg"]);
       verify(
-          db.delete("Table", where: "where", whereArgs: <dynamic>["whereArg"]));
+        db.query(
+          'Table',
+          distinct: true,
+          columns: ['column'],
+          where: 'where',
+          whereArgs: <dynamic>['whereArg'],
+          groupBy: 'groupBy',
+          having: 'having',
+          orderBy: 'orderBy',
+          limit: 1,
+          offset: 1,
+        ),
+      );
     });
 
-    test("delegates to db rawDelete", () async {
+    test('delegates to db rawQuery', () async {
+      await briteDb.rawQuery(
+        'sql',
+        ['whereArg'],
+      );
+      verify(
+        db.rawQuery(
+          'sql',
+          ['whereArg'],
+        ),
+      );
+    });
+
+    test('delegates to db insert', () async {
+      await briteDb.insert(
+        'Table',
+        <String, dynamic>{},
+        conflictAlgorithm: ConflictAlgorithm.fail,
+      );
+      verify(
+        db.insert(
+          'Table',
+          <String, dynamic>{},
+          conflictAlgorithm: ConflictAlgorithm.fail,
+        ),
+      );
+    });
+
+    test('delegates to db rawInsert', () async {
+      await briteDb.rawInsertAndTrigger(
+        ['Table'],
+        'sql',
+        ['arg'],
+      );
+      verify(db.rawInsert('sql', ['arg']));
+    });
+
+    test('delegates to db delete', () async {
+      when(
+        db.delete(
+          any,
+          where: anyNamed('where'),
+          whereArgs: anyNamed('whereArgs'),
+        ),
+      ).thenAnswer((_) => Future.value(1));
+      await briteDb.delete(
+        'Table',
+        where: 'where',
+        whereArgs: ['whereArg'],
+      );
+      verify(
+        db.delete(
+          'Table',
+          where: 'where',
+          whereArgs: ['whereArg'],
+        ),
+      );
+    });
+
+    test('delegates to db rawDelete', () async {
       when(
         db.rawDelete(any, any),
       ).thenAnswer((_) => Future.value(1));
-      await briteDb.rawDeleteAndTrigger(["Table"], "sql", ["arg"]);
-      verify(db.rawDelete("sql", <dynamic>["arg"]));
+      await briteDb.rawDeleteAndTrigger(['Table'], 'sql', ['arg']);
+      verify(db.rawDelete('sql', ['arg']));
     });
 
-    test("delegates to db update", () async {
+    test('delegates to db update', () async {
       when(
         db.update(
           any,
           any,
-          where: anyNamed("where"),
-          whereArgs: anyNamed("whereArgs"),
-          conflictAlgorithm: anyNamed("conflictAlgorithm"),
+          where: anyNamed('where'),
+          whereArgs: anyNamed('whereArgs'),
+          conflictAlgorithm: anyNamed('conflictAlgorithm'),
         ),
       ).thenAnswer((_) => Future.value(1));
-      await briteDb.update("Table", {},
-          where: "where",
-          whereArgs: ["whereArg"],
-          conflictAlgorithm: ConflictAlgorithm.fail);
-      verify(db.update("Table", <String, dynamic>{},
-          where: "where",
-          whereArgs: <dynamic>["whereArg"],
-          conflictAlgorithm: ConflictAlgorithm.fail));
+      await briteDb.update(
+        'Table',
+        <String, dynamic>{},
+        where: 'where',
+        whereArgs: ['whereArg'],
+        conflictAlgorithm: ConflictAlgorithm.fail,
+      );
+      verify(
+        db.update(
+          'Table',
+          <String, dynamic>{},
+          where: 'where',
+          whereArgs: <dynamic>['whereArg'],
+          conflictAlgorithm: ConflictAlgorithm.fail,
+        ),
+      );
     });
 
-    test("delegates to db rawUpdate", () async {
-      when(db.rawUpdate(
-              // ignore: argument_type_not_assignable
-              any,
-              // ignore: argument_type_not_assignable
-              any))
-          .thenAnswer((_) => Future.value(1));
-      await briteDb.rawUpdateAndTrigger(["Table"], "sql", ["arg"]);
-      verify(db.rawUpdate("sql", <dynamic>["arg"]));
+    test('delegates to db rawUpdate', () async {
+      when(db.rawUpdate(any, any)).thenAnswer((_) => Future.value(1));
+      await briteDb.rawUpdateAndTrigger(['Table'], 'sql', ['arg']);
+      verify(db.rawUpdate('sql', ['arg']));
     });
 
-    test("delegates to db execute", () async {
-      await briteDb.execute("sql", <String>["arg"]);
-      verify(db.execute("sql", <dynamic>["arg"]));
+    test('delegates to db execute', () async {
+      await briteDb.execute('sql', ['arg']);
+      verify(db.execute('sql', ['arg']));
     });
   });
 
-  group("transaction", () {
-    test("triggers query again after transactionAndTrigger completes",
+  group('transaction', () {
+    test('triggers query again after transactionAndTrigger completes',
         () async {
       final transaction = MockTransaction();
-      when(transaction.insert("Table", <String, dynamic>{}))
+      when(transaction.insert('Table', <String, dynamic>{}))
           .thenAnswer((_) => Future.value(0));
 
       when(
         db.transaction<dynamic>(
           any,
-          exclusive: anyNamed("exclusive"),
+          exclusive: anyNamed('exclusive'),
         ),
       ).thenAnswer((invocation) {
-        final Function f = invocation.positionalArguments[0] as Function;
-        final Future<int> result = f(transaction) as Future<int>;
-        return result;
+        final f = invocation.positionalArguments[0] as Future<int> Function(
+            Transaction);
+        return f(transaction);
       });
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
       await briteDb.transactionAndTrigger<int>((transaction) {
-        return transaction.insert("Table", <String, Object>{});
+        return transaction.insert(
+          'Table',
+          <String, dynamic>{},
+        );
       });
       await expect;
     });
   });
 
-  group("batch", () {
-    test("trigger query again after batch is commited", () async {
+  group('batch', () {
+    test('trigger query again after batch is commited', () async {
       final batch = MockBatch();
 
       when(db.batch()).thenAnswer((_) => batch);
-      when(batch.insert("Table", <String, Object>{}))
-          .thenAnswer((_) => Future.value(0));
+      when(
+        batch.insert(
+          'Table',
+          <String, dynamic>{},
+        ),
+      ).thenAnswer((_) => Future.value(0));
 
-      final stream$ = briteDb.createQuery("Table");
-      final Future<void> expect = expectLater(
+      final stream$ = briteDb.createQuery('Table');
+      final expect = expectLater(
         stream$,
         emitsInOrder([
-          typeMatcherQuery,
-          typeMatcherQuery,
+          isQuery,
+          isQuery,
         ]),
       );
 
       final streamBatch = briteDb.batch();
-      streamBatch.insert("Table", <String, Object>{});
+      streamBatch.insert(
+        'Table',
+        <String, dynamic>{},
+      );
       await streamBatch.commit();
 
       await expect;
     });
 
     test(
-      "trigger query again after batch is commited (multiple operations)",
+      'trigger query again after batch is commited (multiple operations)',
       () async {
         final batch = MockBatch();
         const table = 'table';
@@ -555,7 +587,7 @@ void main() {
         stream$.listen(
           expectAsync1(
             (v) {
-              expect(v, typeMatcherQuery);
+              expect(v, isQuery);
             },
             count: 2,
             max: 2,
@@ -579,9 +611,3 @@ void main() {
     );
   });
 }
-
-class MockDatabase extends Mock implements Database {}
-
-class MockTransaction extends Mock implements Transaction {}
-
-class MockBatch extends Mock implements Batch {}
