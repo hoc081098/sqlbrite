@@ -8,14 +8,15 @@ class QueryToListStreamTransformer<T>
   final StreamTransformer<Query, List<T>> _transformer;
 
   ///
-  QueryToListStreamTransformer(T mapper(Map<String, dynamic> row))
+  QueryToListStreamTransformer(T Function(Map<String, dynamic> row) mapper)
       : _transformer = _buildTransformer(mapper);
 
   @override
   Stream<List<T>> bind(Stream<Query> stream) => _transformer.bind(stream);
 
   static StreamTransformer<Query, List<T>> _buildTransformer<T>(
-      T mapper(Map<String, dynamic> row)) {
+    T Function(Map<String, dynamic> row) mapper,
+  ) {
     return StreamTransformer<Query, List<T>>((
       Stream<Query> input,
       bool cancelOnError,
@@ -53,20 +54,14 @@ class QueryToListStreamTransformer<T>
       if (input.isBroadcast) {
         controller = StreamController<List<T>>.broadcast(
           onListen: onListen,
-          onCancel: () {
-            subscription.cancel();
-          },
+          onCancel: () => subscription.cancel(),
           sync: true,
         );
       } else {
         controller = StreamController<List<T>>(
           onListen: onListen,
-          onPause: () {
-            subscription.pause();
-          },
-          onResume: () {
-            subscription.resume();
-          },
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
           onCancel: () => subscription.cancel(),
           sync: true,
         );

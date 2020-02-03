@@ -1,4 +1,8 @@
+import 'package:example/data/app_db.dart';
+import 'package:example/data/item.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:random_string/random_string.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,57 +11,73 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData.dark(),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  final _dateFormatter = DateFormat.Hms().add_yMMMd();
 
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('sqlbrite example'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+      body: Container(
+        constraints: BoxConstraints.expand(),
+        child: StreamBuilder<List<Item>>(
+          stream: AppDb.getInstance().getAllItems(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            final items = snapshot.data;
+
+            return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+
+                return ListTile(
+                  title: Text(item.content),
+                  subtitle:
+                      Text('Created: ${_dateFormatter.format(item.createdAt)}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.remove_circle),
+                    onPressed: () => _remove(item),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
         child: Icon(Icons.add),
+        onPressed: _add,
       ),
     );
+  }
+
+  void _add() async {
+    final item = Item(
+      null,
+      randomString(20),
+      DateTime.now(),
+    );
+    final success = await AppDb.getInstance().insert(item);
+    print('Add: $success');
+  }
+
+  void _remove(Item item) async {
+    final success = await AppDb.getInstance().remove(item);
+    print('Remove: $success');
   }
 }

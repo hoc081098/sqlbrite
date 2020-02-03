@@ -9,6 +9,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
+  path_provider:
+  path:
+  random_string:
+  intl:
   sqlbrite:
     path: ../
 

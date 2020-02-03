@@ -8,7 +8,11 @@ import 'brite_transaction.dart';
 ///
 class BriteDatabase extends AbstractBriteDatabaseExecutor
     implements IBriteDatabase {
-  final _triggers = PublishSubject<Set<String>>();
+  static const _tag = '>> [BRITE_DATABASE]';
+
+  final _triggers = PublishSubject<Set<String>>()
+    ..listen((triggeredTable) =>
+        print('$_tag ${'Triggered'.padRight(10, ' ')} = $triggeredTable'));
   final sqlite_api.Database _db;
 
   ///
@@ -67,15 +71,11 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
     Iterable<String> tables,
     Query query,
   ) {
-    final Stream<Query> queryObservable = _triggers
-        .where((strings) {
-          return tables.any((table) {
-            return strings.contains(table);
-          });
-        })
-        .map((_) => query)
-        .startWith(query);
-    return queryObservable;
+    return _triggers
+        .where((triggeredTables) => tables.any(triggeredTables.contains))
+        .mapTo(query)
+        .startWith(query)
+        .doOnData((_) => print('$_tag ${'Query'.padRight(10, ' ')} = $tables'));
   }
 
   @override
