@@ -187,5 +187,16 @@ void main() {
       // ignore: deprecated_member_use
       verify(db.devInvokeSqlMethod('', '')).called(1);
     });
+
+    test('delegates to db transaction', () async {
+      final action = (Transaction transaction) {
+        return transaction.insert(
+          'Table',
+          <String, dynamic>{},
+        );
+      };
+      await briteDb.transaction(action);
+      verify(db.transaction(action)).called(1);
+    });
   });
 }
