@@ -1,7 +1,9 @@
 name: sqlbrite
-description: sqlbrite for flutter- A lightweight wrapper around sqflite which introduces reactive stream semantics to SQL operations.
+description: sqlbrite for flutter - A lightweight wrapper around sqflite which introduces reactive stream semantics to SQL operations.
 version: 1.1.0
 homepage: https://github.com/hoc081098/sqlbrite.git
+repository: https://github.com/hoc081098/sqlbrite.git
+issue_tracker: https://github.com/hoc081098/sqlbrite/issues
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
