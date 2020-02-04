@@ -31,7 +31,7 @@ $ flutter packages get
 3. Import it: Now in your Dart code, you can use:
 
 ```dart
-import 'package:sqlbrite/type_defs.dart';
+import 'package:sqlbrite/sqlbrite.dart';
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ import 'package:sqlbrite/type_defs.dart';
 ### 1. Wrap your database in a `BriteDatabase`:
 
 ```dart
-final Database db;
+final Database db = await openDb();
 final briteDb = BriteDatabase(db);
 ```
 
