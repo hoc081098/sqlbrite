@@ -5,7 +5,7 @@ import '../sqlbrite.dart';
 import 'api.dart';
 import 'brite_transaction.dart';
 
-///
+/// Streaming database
 class BriteDatabase extends AbstractBriteDatabaseExecutor
     implements IBriteDatabase {
   static const _tag = '>> [BRITE_DATABASE]';
@@ -13,9 +13,10 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
   final _triggers = PublishSubject<Set<String>>()
     ..listen((triggeredTable) =>
         print('$_tag ${'Triggered'.padRight(10, ' ')} = $triggeredTable'));
+
   final sqlite_api.Database _db;
 
-  ///
+  /// Construct a [BriteDatabase] backed by a [sqlite_api.Database]
   BriteDatabase(this._db) : super(_db);
 
   @override

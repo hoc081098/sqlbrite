@@ -1,9 +1,12 @@
 import 'package:meta/meta.dart';
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
+import 'package:sqlbrite/src/brite_transaction.dart';
 
 import '../sqlbrite.dart';
 import 'brite_batch.dart';
 
+///
+/// Database to send sql commands, created during [openDatabase]
 ///
 abstract class IBriteDatabase implements sqlite_api.Database {
   ///
@@ -52,7 +55,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
 }
 
 ///
-/// Common API for [BriteDatabase] and [Transaction] to execute SQL commands
+/// Common API for [BriteDatabase] and [BriteTransaction] to execute SQL commands
 ///
 abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   ///
@@ -104,15 +107,51 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
 }
 
 ///
+/// A batch is used to perform multiple operation as a single atomic unit.
+/// A Batch object can be acquired by calling [Database.batch]. It provides
+/// methods for adding operation. None of the operation will be
+/// executed (or visible locally) until commit() is called.
+///
+abstract class IBriteBatch implements sqlite_api.Batch {
+  ///
+  void rawInsertAndTrigger(
+    Iterable<String> tables,
+    String sql, [
+    List<dynamic> arguments,
+  ]);
+
+  ///
+  void rawUpdateAndTrigger(
+    Iterable<String> tables,
+    String sql, [
+    List<dynamic> arguments,
+  ]);
+
+  ///
+  void rawDeleteAndTrigger(
+    Iterable<String> tables,
+    String sql, [
+    List<dynamic> arguments,
+  ]);
+
+  ///
+  void executeAndTrigger(
+    Iterable<String> tables,
+    String sql, [
+    List<dynamic> arguments,
+  ]);
+}
+
+///
 /// Wrap [sqlite_api.DatabaseExecutor] to implement [BriteDatabaseExecutor]
 ///
 abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   final sqlite_api.DatabaseExecutor _delegate;
 
-  ///
+  /// Construct a [AbstractBriteDatabaseExecutor] backed by a [sqlite_api.DatabaseExecutor]
   const AbstractBriteDatabaseExecutor(this._delegate);
 
-  ///
+  /// Override this method to send notifications
   @visibleForOverriding
   void sendTableTrigger(Iterable<String> tables);
 
@@ -131,7 +170,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  sqlite_api.Batch batch() => BriteBatch(this, _delegate.batch());
+  IBriteBatch batch() => BriteBatch(this, _delegate.batch());
 
   @override
   Future<int> delete(

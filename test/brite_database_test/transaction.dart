@@ -15,7 +15,7 @@ void main() {
       briteDb = BriteDatabase(db);
     });
 
-    test('triggers query again after transactionAndTrigger completes',
+    test('Triggers query again after transactionAndTrigger completes',
         () async {
       final transaction = MockTransaction();
       when(transaction.insert('Table', <String, dynamic>{}))

@@ -3,7 +3,7 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 import 'api.dart';
 
 ///
-class BriteBatch implements sqlite_api.Batch {
+class BriteBatch implements IBriteBatch {
   final AbstractBriteDatabaseExecutor _executor;
   final sqlite_api.Batch _delegate;
   final _tables = <String>{};
@@ -82,7 +82,6 @@ class BriteBatch implements sqlite_api.Batch {
       limit: limit,
       offset: offset,
     );
-    _tables.add(table);
   }
 
   @override
@@ -123,7 +122,7 @@ class BriteBatch implements sqlite_api.Batch {
     _tables.add(table);
   }
 
-  ///
+  @override
   void rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
@@ -133,7 +132,7 @@ class BriteBatch implements sqlite_api.Batch {
     _tables.addAll(tables);
   }
 
-  ///
+  @override
   void rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
@@ -143,13 +142,23 @@ class BriteBatch implements sqlite_api.Batch {
     _tables.addAll(tables);
   }
 
-  ///
+  @override
   void rawUpdateAndTrigger(
     Iterable<String> tables,
     String sql, [
     List arguments,
   ]) {
     rawUpdate(sql, arguments);
+    _tables.addAll(tables);
+  }
+
+  @override
+  void executeAndTrigger(
+    Iterable<String> tables,
+    String sql, [
+    List arguments,
+  ]) {
+    execute(sql, arguments);
     _tables.addAll(tables);
   }
 }
