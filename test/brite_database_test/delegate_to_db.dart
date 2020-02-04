@@ -148,5 +148,44 @@ void main() {
       await briteDb.execute('sql', ['arg']);
       verify(db.execute('sql', ['arg']));
     });
+
+    test('delegates to db path', () {
+      briteDb.path;
+      verify(db.path).called(1);
+    });
+
+    test('delegates to db isOpen', () {
+      briteDb.isOpen;
+      verify(db.isOpen).called(1);
+    });
+
+    test('delegates to db close', () {
+      briteDb.close();
+      verify(db.close()).called(1);
+    });
+
+    test('delegates to db getVersion', () {
+      briteDb.getVersion();
+      verify(db.getVersion()).called(1);
+    });
+
+    test('delegates to db setVersion', () {
+      briteDb.setVersion(1);
+      verify(db.setVersion(1)).called(1);
+    });
+
+    test('delegates to db devInvokeMethod', () {
+      // ignore: deprecated_member_use_from_same_package
+      briteDb.devInvokeMethod('');
+      // ignore: deprecated_member_use
+      verify(db.devInvokeMethod('')).called(1);
+    });
+
+    test('delegates to db devInvokeSqlMethod', () {
+      // ignore: deprecated_member_use_from_same_package
+      briteDb.devInvokeSqlMethod('', '');
+      // ignore: deprecated_member_use
+      verify(db.devInvokeSqlMethod('', '')).called(1);
+    });
   });
 }
