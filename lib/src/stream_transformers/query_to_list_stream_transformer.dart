@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import '../type_defs.dart';
+import '../api.dart';
 
-///
+/// Transform [Stream<Query>] to [Stream<List<T>>]
 class QueryToListStreamTransformer<T>
     extends StreamTransformerBase<Query, List<T>> {
   final StreamTransformer<Query, List<T>> _transformer;
 
-  ///
+  /// Construct a [QueryToListStreamTransformer] with [mapper]
   QueryToListStreamTransformer(T Function(Map<String, dynamic> row) mapper)
       : _transformer = _buildTransformer(mapper);
 

@@ -5,7 +5,11 @@ import '../sqlbrite.dart';
 import 'api.dart';
 import 'brite_transaction.dart';
 
+///
+/// [IBriteDatabase] implementation
+///
 /// Streaming database
+///
 class BriteDatabase extends AbstractBriteDatabaseExecutor
     implements IBriteDatabase {
   static const _tag = '>> [BRITE_DATABASE]';

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sqlbrite/src/api.dart';
 import 'package:sqlbrite/src/query_stream.dart';
-import 'package:sqlbrite/src/type_defs.dart';
 
 Stream<Query> _queryStream(int numberOfRows) {
   return Stream<Query>.value(

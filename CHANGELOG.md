@@ -1,15 +1,27 @@
-## 1.1.0 - 04 May, 2019
+## 1.2.0 - Feb 04, 2020
 
-* Add document for public API.
+*   Update dependencies: `rxdart`, `sqflite`.
 
-* Fix error when call method `mapToOne` and `mapToList`.
+*   Add more documents for public API.
 
-* Minor changes.
+*   Fix some bugs.
 
-## 1.0.1 - 03 May, 2019
+*   Upgrade dart `minsdk` to `2.6.0` with extension method feature.
 
-* Update rxdart dependency, fix error when call method `mapToOne` and `mapToList`.
+*   Refactor internal implementations.
 
-## 1.0.0 - 03 May, 2019
+## 1.1.0 - May 04, 2019
 
-* Initial release.
+*   Add document for public API.
+
+*   Fix error when call method `mapToOne` and `mapToList`.
+
+*   Minor changes.
+
+## 1.0.1 - May 03, 2019
+
+*   Update `rxdart` dependency, fix error when call method `mapToOne` and `mapToList`.
+
+## 1.0.0 - May 03, 2019
+
+*   Initial release.

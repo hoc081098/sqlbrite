@@ -2,13 +2,14 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import 'api.dart';
 
-///
+/// [IBriteBatch] implementation
 class BriteBatch implements IBriteBatch {
   final AbstractBriteDatabaseExecutor _executor;
   final sqlite_api.Batch _delegate;
   final _tables = <String>{};
 
-  ///
+  /// Construct a [BriteBatch] with a [AbstractBriteDatabaseExecutor]
+  /// and backed by a [sqlite_api.Batch]
   BriteBatch(this._executor, this._delegate);
 
   @override

@@ -1,9 +1,18 @@
-import 'package:meta/meta.dart';
+import 'package:meta/meta.dart' show visibleForOverriding;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 import 'package:sqlbrite/src/brite_transaction.dart';
 
 import '../sqlbrite.dart';
 import 'brite_batch.dart';
+
+///
+/// Lazy query.
+///
+/// Type alias for a function with no parameters
+/// and returns a Future that completes with a list of map
+/// or an error.
+///
+typedef Query = Future<List<Map<String, dynamic>>> Function();
 
 ///
 /// Database to send sql commands, created during [openDatabase]
@@ -36,7 +45,9 @@ abstract class IBriteDatabase implements sqlite_api.Database {
     int offset,
   });
 
-  /// Like [IBriteDatabase.createQuery]
+  ///
+  /// Like [IBriteDatabase.createQuery].
+  ///
   Stream<Query> createRawQuery(
     Iterable<String> tables,
     String sql, [
@@ -45,7 +56,8 @@ abstract class IBriteDatabase implements sqlite_api.Database {
 
   ///
   /// Calls in action must only be done using the transaction object
-  /// using the database will trigger a dead-lock
+  /// using the database will trigger a dead-lock.
+  ///
   /// A notification to queries for tables will be sent after the transaction is executed.
   ///
   Future<T> transactionAndTrigger<T>(
@@ -55,11 +67,14 @@ abstract class IBriteDatabase implements sqlite_api.Database {
 }
 
 ///
-/// Common API for [BriteDatabase] and [BriteTransaction] to execute SQL commands
+/// Common API for [BriteDatabase] and [BriteTransaction] to execute SQL commands.
 ///
 abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   ///
-  /// Execute an SQL query with no return value, and notify
+  /// See [execute]
+  ///
+  /// Execute an SQL query with no return value, and notify.
+  ///
   /// A notification to queries for [tables] will be sent after the statement is executed.
   ///
   Future<void> executeAndTrigger(
@@ -69,11 +84,14 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   ]);
 
   ///
-  /// Executes a raw SQL DELETE query
+  /// See [rawDelete]
   ///
-  /// Returns the number of changes made
+  /// Executes a raw SQL DELETE query.
   ///
-  /// Only send tables trigger if rows were affected.
+  /// Returns the number of changes made.
+  ///
+  /// A notification to queries for [tables] will be sent after the statement is executed
+  /// and had rows were affected.
   ///
   Future<int> rawDeleteAndTrigger(
     Iterable<String> tables,
@@ -82,10 +100,14 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   ]);
 
   ///
+  /// See [rawUpdate]
+  ///
   /// Execute a raw SQL UPDATE query
   ///
+  /// A notification to queries for [tables] will be sent after the statement is executed
+  /// and had rows were affected.
+  ///
   /// Returns the number of changes made
-  /// Only send tables trigger if rows were affected.
   ///
   Future<int> rawUpdateAndTrigger(
     Iterable<String> tables,
@@ -94,10 +116,14 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   ]);
 
   ///
-  /// Execute a raw SQL INSERT query
+  /// See [rawInsert]
   ///
-  /// Returns the last inserted record id
-  /// Only send tables trigger if the insert was successful.
+  /// Execute a raw SQL INSERT query.
+  ///
+  /// Returns the last inserted record id.
+  ///
+  /// A notification to queries for [tables] will be sent after the statement is executed
+  /// and the insert was successful.
   ///
   Future<int> rawInsertAndTrigger(
     Iterable<String> tables,
@@ -114,12 +140,20 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
 ///
 abstract class IBriteBatch implements sqlite_api.Batch {
   ///
+  /// See [rawInsert]
+  ///
+  /// A notification to queries for [tables] will be sent after the batch is committed
+  ///
   void rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// See [rawUpdate]
+  ///
+  /// A notification to queries for [tables] will be sent after the batch is committed
   ///
   void rawUpdateAndTrigger(
     Iterable<String> tables,
@@ -128,12 +162,20 @@ abstract class IBriteBatch implements sqlite_api.Batch {
   ]);
 
   ///
+  /// See [rawDelete]
+  ///
+  /// A notification to queries for [tables] will be sent after the batch is committed
+  ///
   void rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
   ]);
 
+  ///
+  /// See [execute]
+  ///
+  /// A notification to queries for [tables] will be sent after the batch is committed
   ///
   void executeAndTrigger(
     Iterable<String> tables,
