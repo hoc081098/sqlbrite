@@ -86,6 +86,38 @@ void main() {
         );
       });
 
+      test('shouldThrowD', () async {
+        final queryStream = _queryStream(1)
+            .map<Query>((_) => () => Future.error(Exception('Query error')))
+            .mapToOneOrDefault((row) => row);
+
+        await expectLater(
+          queryStream,
+          emitsError(isException),
+        );
+      });
+
+      test('isBroadcast', () async {
+        final broadcastController = StreamController<Query>.broadcast();
+        broadcastController.add(() => Future.value([{}]));
+        expect(
+          broadcastController.stream
+              .mapToOneOrDefault((row) => row)
+              .isBroadcast,
+          isTrue,
+        );
+
+        final controller = StreamController<Query>.broadcast();
+        controller.add(() => Future.value([{}]));
+        expect(
+          controller.stream.mapToOneOrDefault((row) => row).isBroadcast,
+          isTrue,
+        );
+
+        await broadcastController.close();
+        await controller.close();
+      });
+
       test('asBroadcastStream', () async {
         final stream =
             _queryStream(1).mapToOneOrDefault((row) => row).asBroadcastStream();
@@ -179,6 +211,36 @@ void main() {
             isMap,
           ]),
         );
+      });
+
+      test('shouldThrowD', () async {
+        final queryStream = _queryStream(1)
+            .map<Query>((_) => () => Future.error(Exception('Query error')))
+            .mapToOne((row) => row);
+
+        await expectLater(
+          queryStream,
+          emitsError(isException),
+        );
+      });
+
+      test('isBroadcast', () async {
+        final broadcastController = StreamController<Query>.broadcast();
+        broadcastController.add(() => Future.value([{}]));
+        expect(
+          broadcastController.stream.mapToOne((row) => row).isBroadcast,
+          isTrue,
+        );
+
+        final controller = StreamController<Query>.broadcast();
+        controller.add(() => Future.value([{}]));
+        expect(
+          controller.stream.mapToOne((row) => row).isBroadcast,
+          isTrue,
+        );
+
+        await broadcastController.close();
+        await controller.close();
       });
 
       test('asBroadcastStream', () async {
@@ -277,6 +339,36 @@ void main() {
             [<String, dynamic>{}],
           ]),
         );
+      });
+
+      test('shouldThrowD', () async {
+        final queryStream = _queryStream(1)
+            .map<Query>((_) => () => Future.error(Exception('Query error')))
+            .mapToList((row) => row);
+
+        await expectLater(
+          queryStream,
+          emitsError(isException),
+        );
+      });
+
+      test('isBroadcast', () async {
+        final broadcastController = StreamController<Query>.broadcast();
+        broadcastController.add(() => Future.value([{}]));
+        expect(
+          broadcastController.stream.mapToList((row) => row).isBroadcast,
+          isTrue,
+        );
+
+        final controller = StreamController<Query>.broadcast();
+        controller.add(() => Future.value([{}]));
+        expect(
+          controller.stream.mapToList((row) => row).isBroadcast,
+          isTrue,
+        );
+
+        await broadcastController.close();
+        await controller.close();
       });
 
       test('asBroadcastStream', () async {
