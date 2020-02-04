@@ -20,6 +20,13 @@ void main() {
       final transaction = MockTransaction();
       when(transaction.insert('Table', <String, dynamic>{}))
           .thenAnswer((_) => Future.value(0));
+      when(transaction.delete('Table')).thenAnswer((_) => Future.value(1));
+      when(
+        transaction.update(
+          'Table',
+          <String, dynamic>{},
+        ),
+      ).thenAnswer((_) => Future.value(1));
 
       when(
         db.transaction<dynamic>(
@@ -27,9 +34,9 @@ void main() {
           exclusive: anyNamed('exclusive'),
         ),
       ).thenAnswer((invocation) {
-        final f = invocation.positionalArguments[0] as Future<int> Function(
-            Transaction);
-        return f(transaction);
+        final action = invocation.positionalArguments[0] as Future<int>
+            Function(Transaction);
+        return action(transaction);
       });
 
       final stream$ = briteDb.createQuery('Table');
@@ -37,11 +44,22 @@ void main() {
         stream$,
         emitsInOrder([
           isQuery,
-          isQuery,
+          isQuery, // insert
+          isQuery, // delete
+          isQuery, // update
         ]),
       );
       await briteDb.transactionAndTrigger<int>((transaction) {
         return transaction.insert(
+          'Table',
+          <String, dynamic>{},
+        );
+      });
+      await briteDb.transactionAndTrigger<int>((transaction) {
+        return transaction.delete('Table');
+      });
+      await briteDb.transactionAndTrigger<int>((transaction) {
+        return transaction.update(
           'Table',
           <String, dynamic>{},
         );
