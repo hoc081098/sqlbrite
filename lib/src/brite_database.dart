@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
@@ -12,21 +14,24 @@ import 'brite_transaction.dart';
 ///
 class BriteDatabase extends AbstractBriteDatabaseExecutor
     implements IBriteDatabase {
-  static const _tag = '>> [BRITE_DATABASE]';
+  static const _tag = '>>> [Brite database]';
 
-  final _triggers = PublishSubject<Set<String>>()
-    ..listen((triggeredTable) =>
-        print('$_tag ${'Triggered'.padRight(10, ' ')} = $triggeredTable'));
+  final _triggers = PublishSubject<Set<String>>();
+  StreamSubscription<Set<String>> _subscription;
 
   final sqlite_api.Database _db;
 
   /// Construct a [BriteDatabase] backed by a [sqlite_api.Database]
-  BriteDatabase(this._db) : super(_db);
+  BriteDatabase(this._db) : super(_db) {
+    _subscription = _triggers.listen((tables) {
+      final description = 'Send triggered'.padRight(16, ' ');
+      print('$_tag $description : ${tables.description}');
+    });
+  }
 
   @override
-  void sendTableTrigger(Iterable<String> tables) {
-    _triggers.add(tables.toSet());
-  }
+  void sendTableTrigger(Iterable<String> tables) =>
+      _triggers.add(tables.toSet());
 
   @override
   Stream<Query> createQuery(
@@ -65,12 +70,8 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
     Iterable<String> tables,
     String sql, [
     List<dynamic> arguments,
-  ]) {
-    return _createQuery(
-      tables,
-      () => _db.rawQuery(sql, arguments),
-    );
-  }
+  ]) =>
+      _createQuery(tables, () => _db.rawQuery(sql, arguments));
 
   Stream<Query> _createQuery(
     Iterable<String> tables,
@@ -80,11 +81,17 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
         .where((triggeredTables) => tables.any(triggeredTables.contains))
         .mapTo(query)
         .startWith(query)
-        .doOnData((_) => print('$_tag ${'Query'.padRight(10, ' ')} = $tables'));
+        .shareValue()
+        .doOnData((_) => print(
+            '$_tag ${'Send query'.padRight(16, ' ')} : ${tables.description}'));
   }
 
   @override
-  Future<void> close() => _db.close();
+  Future<void> close() async {
+    await _triggers.close();
+    await _subscription.cancel();
+    await _db.close();
+  }
 
   @deprecated
   @override
@@ -138,5 +145,12 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
 
     sendTableTrigger(tables);
     return result;
+  }
+}
+
+extension _ToStringExtension on Iterable<String> {
+  String get description {
+    final joined = map((e) => "'$e'").join(', ');
+    return '[$joined]';
   }
 }

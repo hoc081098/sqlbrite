@@ -159,8 +159,8 @@ void main() {
       verify(db.isOpen).called(1);
     });
 
-    test('delegates to db close', () {
-      briteDb.close();
+    test('delegates to db close', () async {
+      await briteDb.close();
       verify(db.close()).called(1);
     });
 

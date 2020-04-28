@@ -1,3 +1,10 @@
+## 1.3.0 - Apr 29, 2020
+
+*   Breaking change: support for `rxdart` 0.24.x.
+*   Breaking change: support for `sqflite` 1.3.x
+*   Now, returned query stream is a broadcast stream.
+*   Internal implementation refactor.
+
 ## 1.2.0 - Feb 04, 2020
 
 *   Update dependencies: `rxdart`, `sqflite`.
