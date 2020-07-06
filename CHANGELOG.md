@@ -1,3 +1,8 @@
+## 1.4.0 - July 6, 2020
+
+*   **Breaking change**: returned stream is a **_single-subscription_** stream.
+*   Allow disable/enable logger (via `_isLoggerEnabled` optional parameter in `BriteDatabase` constructor).
+
 ## 1.3.0 - Apr 29, 2020
 
 *   Breaking change: support for `rxdart` 0.24.x.

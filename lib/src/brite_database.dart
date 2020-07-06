@@ -6,6 +6,7 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 import '../sqlbrite.dart';
 import 'api.dart';
 import 'brite_transaction.dart';
+import 'stream_transformers/single_subscription.dart';
 
 ///
 /// [IBriteDatabase] implementation
@@ -20,12 +21,15 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
   StreamSubscription<Set<String>> _subscription;
 
   final sqlite_api.Database _db;
+  final bool _isLoggerEnabled;
 
   /// Construct a [BriteDatabase] backed by a [sqlite_api.Database]
-  BriteDatabase(this._db) : super(_db) {
+  BriteDatabase(this._db, [this._isLoggerEnabled = true]) : super(_db) {
+    final description = 'Send triggered'.padRight(16, ' ');
     _subscription = _triggers.listen((tables) {
-      final description = 'Send triggered'.padRight(16, ' ');
-      print('$_tag $description : ${tables.description}');
+      if (_isLoggerEnabled) {
+        print('$_tag $description : ${tables.description}');
+      }
     });
   }
 
@@ -77,13 +81,19 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
     Iterable<String> tables,
     Query query,
   ) {
+    final log = (_) {
+      if (_isLoggerEnabled) {
+        print(
+            '$_tag ${'Send query'.padRight(16, ' ')} : ${tables.description}');
+      }
+    };
+
     return _triggers
+        .toSingleSubscriptionStream()
         .where((triggeredTables) => tables.any(triggeredTables.contains))
         .mapTo(query)
         .startWith(query)
-        .shareValue()
-        .doOnData((_) => print(
-            '$_tag ${'Send query'.padRight(16, ' ')} : ${tables.description}'));
+        .doOnData(log);
   }
 
   @override

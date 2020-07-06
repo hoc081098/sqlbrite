@@ -1,9 +1,10 @@
 import 'package:example/data/item.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:random_string/random_string.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart';
+
+import 'faker.dart';
 
 const _tableItems = 'items';
 
@@ -30,7 +31,7 @@ Future<Database> _open() async {
           _tableItems,
           Item(
             null,
-            randomString(20),
+            contents.random(),
             DateTime.now(),
           ).toJson(),
         );
@@ -76,6 +77,18 @@ class AppDb {
       _tableItems,
       where: 'id = ?',
       whereArgs: [item.id],
+    );
+    return rows > 0;
+  }
+
+  Future<bool> update(Item item) async {
+    final db = await _dbFuture;
+    final rows = await db.update(
+      _tableItems,
+      item.toJson(),
+      where: 'id = ?',
+      whereArgs: [item.id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return rows > 0;
   }

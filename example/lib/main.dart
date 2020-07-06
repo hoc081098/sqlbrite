@@ -2,7 +2,8 @@ import 'package:example/data/app_db.dart';
 import 'package:example/data/item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:random_string/random_string.dart';
+
+import 'data/faker.dart';
 
 void main() => runApp(MyApp());
 
@@ -49,9 +50,18 @@ class MyHomePage extends StatelessWidget {
                   title: Text(item.content),
                   subtitle:
                       Text('Created: ${_dateFormatter.format(item.createdAt)}'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.remove_circle),
-                    onPressed: () => _remove(item),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove_circle),
+                        onPressed: () => _remove(item),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _update(item),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -69,7 +79,7 @@ class MyHomePage extends StatelessWidget {
   void _add() async {
     final item = Item(
       null,
-      randomString(20),
+      contents.random(),
       DateTime.now(),
     );
     final success = await AppDb.getInstance().insert(item);
@@ -79,5 +89,14 @@ class MyHomePage extends StatelessWidget {
   void _remove(Item item) async {
     final success = await AppDb.getInstance().remove(item);
     print('Remove: $success');
+  }
+
+  void _update(Item item) async {
+    final success = await AppDb.getInstance().update(
+      item.copyWith(
+        contents.random(),
+      ),
+    );
+    print('Update: $success');
   }
 }

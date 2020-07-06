@@ -25,6 +25,8 @@ class Item {
     };
   }
 
+  Item copyWith(String content) => Item(id, content, createdAt);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
