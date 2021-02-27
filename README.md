@@ -150,4 +150,4 @@ This library is not an ORM. It is not a type-safe query mechanism. It's not goin
 
 ## License
     MIT License
-    Copyright (c) 2020 Petrus Nguyễn Thái Học
+    Copyright (c) 2019 - 2021 Petrus Nguyễn Thái Học
