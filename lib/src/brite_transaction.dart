@@ -1,8 +1,10 @@
+import 'package:meta/meta.dart';
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import 'api.dart';
 
 /// A [sqlite_api.Transaction] that captures notified table names
+@internal
 class BriteTransaction extends AbstractBriteDatabaseExecutor
     implements sqlite_api.Transaction {
   final _tables = <String>{};
