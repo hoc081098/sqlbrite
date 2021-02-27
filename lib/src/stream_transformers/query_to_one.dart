@@ -14,10 +14,10 @@ class _Wrapper<T> {
 /// Transform [Stream<Query>] to [Stream<T>]
 Stream<T> _queryToOneStreamTransformer<T>(
   final Stream<Query> stream,
-  final T Function(Map<String, Object?> row) mapper,
+  final T Function(Map<String, Object?> row) rowMapper,
   final _Wrapper<T>? defaultValue,
 ) {
-  assert(mapper != null);
+  assert(rowMapper != null);
 
   final controller = stream.isBroadcast
       ? StreamController<T>.broadcast(sync: true)
@@ -38,7 +38,7 @@ Stream<T> _queryToOneStreamTransformer<T>(
       }
     } else {
       try {
-        controller.add(mapper(rows.first));
+        controller.add(rowMapper(rows.first));
       } catch (e, s) {
         controller.addError(e, s);
       }
@@ -92,8 +92,8 @@ extension MapToOneOrDefaultQueryStreamExtensions on Stream<Query> {
   ///
   ///
   Stream<T> mapToOneOrDefault<T>(
-          T Function(Map<String, Object?> row) mapper, T defaultValue) =>
-      _queryToOneStreamTransformer(this, mapper, _Wrapper(defaultValue));
+          T Function(Map<String, Object?> row) rowMapper, T defaultValue) =>
+      _queryToOneStreamTransformer(this, rowMapper, _Wrapper(defaultValue));
 }
 
 /// Transform [Query] to single value
@@ -106,6 +106,6 @@ extension MapToOneQueryStreamExtensions on Stream<Query> {
   /// set. Use `LIMIT 1` on the underlying SQL query to prevent this.
   /// Emits a [StateError] when result sets with 0 rows.
   ///
-  Stream<T> mapToOne<T>(T Function(Map<String, Object?> row) mapper) =>
-      _queryToOneStreamTransformer(this, mapper, null);
+  Stream<T> mapToOne<T>(T Function(Map<String, Object?> row) rowMapper) =>
+      _queryToOneStreamTransformer(this, rowMapper, null);
 }
