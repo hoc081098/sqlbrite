@@ -111,7 +111,7 @@ extension MapToOneQueryStreamExtensions on Stream<Query> {
   ///
   /// It is an [StateError] for a query to pass through this operator with more than 1 row in its result
   /// set. Use `LIMIT 1` on the underlying SQL query to prevent this.
-  /// Emits a [StateError] when result sets with 0 rows.
+  /// Emits a [StateError] when result sets has 0 rows.
   ///
   Stream<T> mapToOne<T>(T Function(Map<String, Object?> row) rowMapper) =>
       _queryToOneStreamTransformer(this, rowMapper, null);

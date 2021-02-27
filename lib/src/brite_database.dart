@@ -31,7 +31,8 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
   /// Set to `null` to disable logging.
   final BriteDatabaseLogger? logger;
 
-  /// Construct a [BriteDatabase] backed by a [sqlite_api.Database]
+  /// Construct a [BriteDatabase] backed by a [sqlite_api.Database].
+  /// To disable logging, pass `null` to [logger].
   BriteDatabase(this._db, {BriteDatabaseLogger? logger = print})
       : assert(_db != null),
         logger = logger,
