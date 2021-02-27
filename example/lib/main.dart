@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:example/data/app_db.dart';
 import 'package:example/data/item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 import 'data/faker.dart';
 
@@ -18,10 +21,39 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final _dateFormatter = DateFormat.Hms().add_yMMMd();
 
-  MyHomePage({Key? key}) : super(key: key);
+  late final NotReplayValueStream<List<Item>?> items$ = () {
+    final stream = AppDb.getInstance()
+        .getAllItems()
+        .cast<List<Item>?>()
+        .publishValueNotReplay(null);
+    subscription = stream.connect();
+    return stream;
+  }();
+
+  StreamSubscription<List<Item>?>? subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    final _ = items$;
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    subscription = null;
+    super.dispose();
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,8 +62,9 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Container(
         constraints: BoxConstraints.expand(),
-        child: StreamBuilder<List<Item>>(
-          stream: AppDb.getInstance().getAllItems(),
+        child: StreamBuilder<List<Item>?>(
+          stream: items$,
+          initialData: items$.requireValue,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -43,13 +76,13 @@ class MyHomePage extends StatelessWidget {
               );
             }
 
-            if (!snapshot.hasData) {
+            final items = snapshot.data;
+
+            if (items == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-
-            final items = snapshot.data!;
 
             return ListView.builder(
               itemCount: items.length,
