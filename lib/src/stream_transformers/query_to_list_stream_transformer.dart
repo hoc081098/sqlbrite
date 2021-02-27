@@ -2,78 +2,65 @@ import 'dart:async';
 
 import '../api.dart';
 
-/// Transform [Stream<Query>] to [Stream<List<T>>]
-class QueryToListStreamTransformer<T>
-    extends StreamTransformerBase<Query, List<T>> {
-  final StreamTransformer<Query, List<T>> _transformer;
+// TODO: Remove assert
+// ignore_for_file: unnecessary_null_comparison
 
-  /// Construct a [QueryToListStreamTransformer] with [mapper]
-  QueryToListStreamTransformer(T Function(Map<String, dynamic> row) mapper)
-      : _transformer = _buildTransformer(mapper);
+/// Transform [Query] to list of values.
+/// [Stream<Query>] to [Stream<List<T>>].
+extension MapToListQueryStreamExtensions on Stream<Query> {
+  ///
+  /// Given a function mapping the current row to T, transform each
+  /// emitted [Query] to a [List<T>].
+  ///
+  Stream<List<T>> mapToList<T>(T Function(Map<String, Object?> row) rowMapper) {
+    assert(rowMapper != null);
 
-  @override
-  Stream<List<T>> bind(Stream<Query> stream) => _transformer.bind(stream);
+    final controller = isBroadcast
+        ? StreamController<List<T>>.broadcast(sync: true)
+        : StreamController<List<T>>(sync: true);
+    StreamSubscription<Query>? subscription;
 
-  static StreamTransformer<Query, List<T>> _buildTransformer<T>(
-    T Function(Map<String, dynamic> row) mapper,
-  ) {
-    ArgumentError.checkNotNull(mapper, 'mapper');
-
-    return StreamTransformer<Query, List<T>>((
-      Stream<Query> input,
-      bool cancelOnError,
-    ) {
-      StreamController<List<T>> controller;
-      StreamSubscription<Query> subscription;
-
-      void add(List<Map<String, dynamic>> rows) {
-        try {
-          final items = rows.map((row) => mapper(row)).toList(growable: false);
-          controller.add(items);
-        } catch (e, s) {
-          controller.addError(e, s);
-        }
+    void add(List<Map<String, Object?>> rows) {
+      try {
+        final items = rows.map((row) => rowMapper(row));
+        controller.add(List.unmodifiable(items));
+      } catch (e, s) {
+        controller.addError(e, s);
       }
+    }
 
-      void onListen() {
-        subscription = input.listen(
-          (Query event) {
-            Future<List<Map<String, dynamic>>> newValue;
-            try {
-              newValue = event();
-            } catch (e, s) {
-              controller.addError(e, s);
-              return;
-            }
-            if (newValue != null) {
-              subscription.pause();
-              newValue
-                  .then(add, onError: controller.addError)
-                  .whenComplete(subscription.resume);
-            }
-          },
-          onError: controller.addError,
-          onDone: controller.close,
-        );
+    controller.onListen = () {
+      subscription = listen(
+        (query) {
+          Future<List<Map<String, Object?>>> future;
+
+          try {
+            future = query();
+          } catch (e, s) {
+            controller.addError(e, s);
+            return;
+          }
+
+          subscription!.pause();
+          future
+              .then(add, onError: controller.addError)
+              .whenComplete(subscription!.resume);
+        },
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+
+      if (!isBroadcast) {
+        controller.onPause = () => subscription!.pause();
+        controller.onResume = () => subscription!.resume();
       }
+    };
+    controller.onCancel = () {
+      final toCancel = subscription;
+      subscription = null;
+      return toCancel?.cancel();
+    };
 
-      if (input.isBroadcast) {
-        controller = StreamController<List<T>>.broadcast(
-          onListen: onListen,
-          onCancel: () => subscription.cancel(),
-          sync: true,
-        );
-      } else {
-        controller = StreamController<List<T>>(
-          onListen: onListen,
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel(),
-          sync: true,
-        );
-      }
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }

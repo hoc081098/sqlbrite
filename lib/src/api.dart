@@ -1,9 +1,8 @@
-import 'package:meta/meta.dart' show visibleForOverriding;
+import 'package:meta/meta.dart' show internal, visibleForOverriding;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
-import 'package:sqlbrite/src/brite_transaction.dart';
 
-import '../sqlbrite.dart';
 import 'brite_batch.dart';
+import 'brite_transaction.dart';
 
 ///
 /// Lazy query.
@@ -12,7 +11,7 @@ import 'brite_batch.dart';
 /// and returns a Future that completes with a list of map
 /// or an error.
 ///
-typedef Query = Future<List<Map<String, dynamic>>> Function();
+typedef Query = Future<List<Map<String, Object?>>> Function();
 
 ///
 /// Database to send sql commands, created during [openDatabase]
@@ -34,15 +33,15 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   ///
   Stream<Query> createQuery(
     String table, {
-    bool distinct,
-    List<String> columns,
-    String where,
-    List<dynamic> whereArgs,
-    String groupBy,
-    String having,
-    String orderBy,
-    int limit,
-    int offset,
+    bool? distinct,
+    List<String>? columns,
+    String? where,
+    List<Object?>? whereArgs,
+    String? groupBy,
+    String? having,
+    String? orderBy,
+    int? limit,
+    int? offset,
   });
 
   ///
@@ -51,7 +50,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   Stream<Query> createRawQuery(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -62,7 +61,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   ///
   Future<T> transactionAndTrigger<T>(
     Future<T> Function(sqlite_api.Transaction txn) action, {
-    bool exclusive,
+    bool? exclusive,
   });
 }
 
@@ -80,7 +79,7 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   Future<void> executeAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -96,7 +95,7 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   Future<int> rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -112,7 +111,7 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   Future<int> rawUpdateAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -128,7 +127,7 @@ abstract class BriteDatabaseExecutor implements sqlite_api.DatabaseExecutor {
   Future<int> rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 }
 
@@ -147,7 +146,7 @@ abstract class IBriteBatch implements sqlite_api.Batch {
   void rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -158,7 +157,7 @@ abstract class IBriteBatch implements sqlite_api.Batch {
   void rawUpdateAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -169,7 +168,7 @@ abstract class IBriteBatch implements sqlite_api.Batch {
   void rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 
   ///
@@ -180,7 +179,7 @@ abstract class IBriteBatch implements sqlite_api.Batch {
   void executeAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]);
 }
 
@@ -195,17 +194,18 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
 
   /// Override this method to send notifications
   @visibleForOverriding
+  @internal
   void sendTableTrigger(Iterable<String> tables);
 
   @override
-  Future<void> execute(String sql, [List<dynamic> arguments]) =>
+  Future<void> execute(String sql, [List<Object?>? arguments]) =>
       _delegate.execute(sql, arguments);
 
   @override
   Future<void> executeAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]) async {
     await execute(sql, arguments);
     sendTableTrigger(tables);
@@ -217,8 +217,8 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   @override
   Future<int> delete(
     String table, {
-    String where,
-    List<dynamic> whereArgs,
+    String? where,
+    List<Object?>? whereArgs,
   }) async {
     final rows = await _delegate.delete(
       table,
@@ -232,14 +232,14 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  Future<int> rawDelete(String sql, [List<dynamic> arguments]) =>
+  Future<int> rawDelete(String sql, [List<Object?>? arguments]) =>
       _delegate.rawDelete(sql, arguments);
 
   @override
   Future<int> rawDeleteAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]) async {
     final rows = await rawDelete(sql, arguments);
     if (rows > 0) {
@@ -251,10 +251,10 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   @override
   Future<int> update(
     String table,
-    Map<String, dynamic> values, {
-    String where,
-    List<dynamic> whereArgs,
-    sqlite_api.ConflictAlgorithm conflictAlgorithm,
+    Map<String, Object?> values, {
+    String? where,
+    List<Object?>? whereArgs,
+    sqlite_api.ConflictAlgorithm? conflictAlgorithm,
   }) async {
     final rows = await _delegate.update(
       table,
@@ -270,14 +270,14 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  Future<int> rawUpdate(String sql, [List<dynamic> arguments]) =>
+  Future<int> rawUpdate(String sql, [List<Object?>? arguments]) =>
       _delegate.rawUpdate(sql, arguments);
 
   @override
   Future<int> rawUpdateAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]) async {
     final rows = await rawUpdate(sql, arguments);
     if (rows > 0) {
@@ -287,24 +287,24 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> rawQuery(
+  Future<List<Map<String, Object?>>> rawQuery(
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]) =>
       _delegate.rawQuery(sql, arguments);
 
   @override
-  Future<List<Map<String, dynamic>>> query(
+  Future<List<Map<String, Object?>>> query(
     String table, {
-    bool distinct,
-    List<String> columns,
-    String where,
-    List<dynamic> whereArgs,
-    String groupBy,
-    String having,
-    String orderBy,
-    int limit,
-    int offset,
+    bool? distinct,
+    List<String>? columns,
+    String? where,
+    List<Object?>? whereArgs,
+    String? groupBy,
+    String? having,
+    String? orderBy,
+    int? limit,
+    int? offset,
   }) {
     return _delegate.query(
       table,
@@ -323,9 +323,9 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   @override
   Future<int> insert(
     String table,
-    Map<String, dynamic> values, {
-    String nullColumnHack,
-    sqlite_api.ConflictAlgorithm conflictAlgorithm,
+    Map<String, Object?> values, {
+    String? nullColumnHack,
+    sqlite_api.ConflictAlgorithm? conflictAlgorithm,
   }) async {
     final id = await _delegate.insert(
       table,
@@ -340,14 +340,14 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  Future<int> rawInsert(String sql, [List<dynamic> arguments]) =>
+  Future<int> rawInsert(String sql, [List<Object?>? arguments]) =>
       _delegate.rawInsert(sql, arguments);
 
   @override
   Future<int> rawInsertAndTrigger(
     Iterable<String> tables,
     String sql, [
-    List<dynamic> arguments,
+    List<Object?>? arguments,
   ]) async {
     final id = await rawInsert(sql, arguments);
     if (id != -1) {

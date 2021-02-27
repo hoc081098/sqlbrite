@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   final _dateFormatter = DateFormat.Hms().add_yMMMd();
 
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,13 +33,23 @@ class MyHomePage extends StatelessWidget {
         child: StreamBuilder<List<Item>>(
           stream: AppDb.getInstance().getAllItems(),
           builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: Theme.of(context).textTheme.headline6,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+
             if (!snapshot.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
 
-            final items = snapshot.data;
+            final items = snapshot.data!;
 
             return ListView.builder(
               itemCount: items.length,

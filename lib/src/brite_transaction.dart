@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart' show UnmodifiableSetView;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import 'api.dart';
@@ -9,7 +8,7 @@ class BriteTransaction extends AbstractBriteDatabaseExecutor
   final _tables = <String>{};
 
   /// Get notified table names
-  Set<String> get tables => UnmodifiableSetView(_tables);
+  Set<String> get tables => Set.unmodifiable(_tables);
 
   /// Construct a [BriteTransaction] backed by a [sqlite_api.Transaction]
   BriteTransaction(sqlite_api.Transaction txn) : super(txn);
