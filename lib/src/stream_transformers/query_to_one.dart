@@ -41,7 +41,7 @@ Stream<T> _queryToOneStreamTransformer<T>(
       return;
     }
 
-    T result;
+    final T result;
     try {
       result = rowMapper(rows[0]);
     } catch (e, s) {
