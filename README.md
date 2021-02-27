@@ -2,10 +2,13 @@
 
 ## Author: [Petrus Nguyễn Thái Học](https://github.com/hoc081098)
 
-[![Pub](https://img.shields.io/pub/vpre/sqlbrite.svg)](https://pub.dartlang.org/packages/sqlbrite)
-[![Build Status](https://travis-ci.org/hoc081098/sqlbrite.svg?branch=master)](https://travis-ci.org/hoc081098/sqlbrite)
+[![Pub](https://img.shields.io/pub/v/sqlbrite)](https://pub.dev/packages/sqlbrite)
+[![Pub](https://img.shields.io/pub/v/sqlbrite?include_prereleases)](https://pub.dev/packages/sqlbrite)
+[![Build Status](https://travis-ci.com/hoc081098/sqlbrite.svg?branch=master)](https://travis-ci.com/hoc081098/sqlbrite)
 [![codecov](https://codecov.io/gh/hoc081098/sqlbrite/branch/master/graph/badge.svg)](https://codecov.io/gh/hoc081098/sqlbrite)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Style](https://img.shields.io/badge/style-pedantic-40c4ff.svg)](https://github.com/dart-lang/pedantic)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhoc081098%2Fsqlbrite&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 -   Reactive stream wrapper around `sqflite` for Flutter inspired by [sqlbrite](https://github.com/square/sqlbrite)
 -   Streaming sqflite
@@ -19,7 +22,7 @@
 ```yaml
 dependencies:
   ...
-  sqlbrite: ^1.2.0
+  sqlbrite: <latest_version>
 ```
 
 2.  Install it: You can install packages from the command line with Flutter:
@@ -61,7 +64,7 @@ class Entity {
 
 #### Use `mapToOne` extension method on `Stream<Query>`
 ```dart
-// Emits a single row, doesn't emit if the row doesn't exist, emit error if more than 1 row in result set
+// Emits a single row, emit error if the row doesn't exist or more than 1 row in result set.
 final Stream<Entity> singleQuery$ = briteDb.createQuery(
   'table',
   where: 'id = ?',

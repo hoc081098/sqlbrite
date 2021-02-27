@@ -3,12 +3,12 @@ import 'package:mockito/mockito.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqlbrite/src/brite_database.dart';
 
-import '../mocks.dart';
+import '../mocks.mocks.dart';
 
 void main() {
   group('Delegates to db', () {
-    Database db;
-    BriteDatabase briteDb;
+    late MockDatabase db;
+    late BriteDatabase briteDb;
 
     setUp(() {
       db = MockDatabase();
@@ -16,86 +16,135 @@ void main() {
     });
 
     test('delegates to db query', () async {
+      final table = 'Table';
+      final distinct = true;
+      final columns = ['column'];
+      final where = 'where';
+      final whereArgs = ['whereArg'];
+      final groupBy = 'groupBy';
+      final having = 'having';
+      final orderBy = 'orderBy';
+      final limit = 1;
+      final offset = 1;
+
+      when(
+        db.query(
+          table,
+          distinct: distinct,
+          columns: columns,
+          where: where,
+          whereArgs: whereArgs,
+          groupBy: groupBy,
+          having: having,
+          orderBy: orderBy,
+          limit: limit,
+          offset: offset,
+        ),
+      ).thenAnswer((_) => Future.value(<Map<String, Object?>>[]));
+
       await briteDb.query(
-        'Table',
-        distinct: true,
-        columns: ['column'],
-        where: 'where',
-        whereArgs: ['whereArg'],
-        groupBy: 'groupBy',
-        having: 'having',
-        orderBy: 'orderBy',
-        limit: 1,
-        offset: 1,
+        table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
       );
+
       verify(
         db.query(
-          'Table',
-          distinct: true,
-          columns: ['column'],
-          where: 'where',
-          whereArgs: ['whereArg'],
-          groupBy: 'groupBy',
-          having: 'having',
-          orderBy: 'orderBy',
-          limit: 1,
-          offset: 1,
+          table,
+          distinct: distinct,
+          columns: columns,
+          where: where,
+          whereArgs: whereArgs,
+          groupBy: groupBy,
+          having: having,
+          orderBy: orderBy,
+          limit: limit,
+          offset: offset,
         ),
-      );
+      ).called(1);
     });
 
     test('delegates to db rawQuery', () async {
+      final sql = 'sql';
+      final arguments = ['whereArg'];
+
+      when(
+        db.rawQuery(
+          sql,
+          arguments,
+        ),
+      ).thenAnswer((realInvocation) => Future.value([]));
+
       await briteDb.rawQuery(
-        'sql',
-        ['whereArg'],
+        sql,
+        arguments,
       );
+
       verify(
         db.rawQuery(
-          'sql',
-          ['whereArg'],
+          sql,
+          arguments,
         ),
       );
     });
 
     test('delegates to db insert', () async {
+      when(
+        db.insert(
+          'Table',
+          <String, Object?>{},
+          conflictAlgorithm: ConflictAlgorithm.fail,
+        ),
+      ).thenAnswer((realInvocation) => Future.value(1));
+
       await briteDb.insert(
         'Table',
-        <String, dynamic>{},
+        <String, Object?>{},
         conflictAlgorithm: ConflictAlgorithm.fail,
       );
       verify(
         db.insert(
           'Table',
-          <String, dynamic>{},
+          <String, Object?>{},
           conflictAlgorithm: ConflictAlgorithm.fail,
         ),
       );
     });
 
     test('delegates to db rawInsert', () async {
-      await briteDb.rawInsert(
-        'sql',
-        ['arg'],
-      );
+      when(db.rawInsert('sql', ['arg']))
+          .thenAnswer((realInvocation) => Future.value(0));
+      await briteDb.rawInsert('sql', ['arg']);
       verify(db.rawInsert('sql', ['arg']));
     });
 
     test('delegates to db delete', () async {
+      const table = 'Table';
+
       when(
         db.delete(
-          any,
+          table,
           where: anyNamed('where'),
           whereArgs: anyNamed('whereArgs'),
         ),
       ).thenAnswer((_) => Future.value(1));
+
       await briteDb.delete(
-        'Table',
+        table,
         where: 'where',
         whereArgs: ['whereArg'],
       );
+
       verify(
         db.delete(
-          'Table',
+          table,
           where: 'where',
           whereArgs: ['whereArg'],
         ),
@@ -103,45 +152,63 @@ void main() {
     });
 
     test('delegates to db rawDelete', () async {
+      const sql = 'sql';
+      const arguments = ['arg'];
+
       when(
-        db.rawDelete(any, any),
+        db.rawDelete(sql, arguments),
       ).thenAnswer((_) => Future.value(1));
-      await briteDb.rawDelete('sql', ['arg']);
-      verify(db.rawDelete('sql', ['arg']));
+
+      await briteDb.rawDelete(sql, arguments);
+
+      verify(db.rawDelete(sql, arguments));
     });
 
     test('delegates to db update', () async {
+      const table = 'Table';
+      const values = <String, Object?>{};
+      const where = 'where';
+      const whereArgs = ['whereArg'];
+      const algorithm = ConflictAlgorithm.fail;
+
       when(
         db.update(
-          any,
-          any,
-          where: anyNamed('where'),
-          whereArgs: anyNamed('whereArgs'),
-          conflictAlgorithm: anyNamed('conflictAlgorithm'),
+          table,
+          values,
+          where: where,
+          whereArgs: whereArgs,
+          conflictAlgorithm: algorithm,
         ),
       ).thenAnswer((_) => Future.value(1));
+
       await briteDb.update(
-        'Table',
-        <String, dynamic>{},
-        where: 'where',
-        whereArgs: ['whereArg'],
-        conflictAlgorithm: ConflictAlgorithm.fail,
+        table,
+        values,
+        where: where,
+        whereArgs: whereArgs,
+        conflictAlgorithm: algorithm,
       );
+
       verify(
         db.update(
-          'Table',
-          <String, dynamic>{},
-          where: 'where',
-          whereArgs: <dynamic>['whereArg'],
-          conflictAlgorithm: ConflictAlgorithm.fail,
+          table,
+          values,
+          where: where,
+          whereArgs: whereArgs,
+          conflictAlgorithm: algorithm,
         ),
       );
     });
 
     test('delegates to db rawUpdate', () async {
-      when(db.rawUpdate(any, any)).thenAnswer((_) => Future.value(1));
-      await briteDb.rawUpdate('sql', ['arg']);
-      verify(db.rawUpdate('sql', ['arg']));
+      const sql = 'sql';
+      const arguments = ['arg'];
+
+      when(db.rawUpdate(sql, arguments)).thenAnswer((_) => Future.value(1));
+
+      await briteDb.rawUpdate(sql, arguments);
+
+      verify(db.rawUpdate(sql, arguments));
     });
 
     test('delegates to db execute', () async {
@@ -150,52 +217,75 @@ void main() {
     });
 
     test('delegates to db path', () {
+      when(db.path).thenReturn('expected');
       briteDb.path;
       verify(db.path).called(1);
     });
 
     test('delegates to db isOpen', () {
+      when(db.isOpen).thenReturn(true);
       briteDb.isOpen;
       verify(db.isOpen).called(1);
     });
 
     test('delegates to db close', () async {
+      when(db.close()).thenAnswer((realInvocation) => Future.value(null));
       await briteDb.close();
       verify(db.close()).called(1);
     });
 
     test('delegates to db getVersion', () {
+      when(db.getVersion()).thenAnswer((realInvocation) => Future.value(1));
       briteDb.getVersion();
       verify(db.getVersion()).called(1);
     });
 
     test('delegates to db setVersion', () {
+      when(db.setVersion(1)).thenAnswer((realInvocation) => Future.value(null));
       briteDb.setVersion(1);
       verify(db.setVersion(1)).called(1);
     });
 
     test('delegates to db devInvokeMethod', () {
+      const method = 'method';
+      const arguments = 1;
+
+      when(db.devInvokeMethod<void>(method, arguments))
+          .thenAnswer((realInvocation) => Future.value(null));
+
       // ignore: deprecated_member_use_from_same_package
-      briteDb.devInvokeMethod('');
-      // ignore: deprecated_member_use
-      verify(db.devInvokeMethod('')).called(1);
+      briteDb.devInvokeMethod<void>(method, arguments);
+
+      verify(db.devInvokeMethod<void>(method, arguments)).called(arguments);
     });
 
     test('delegates to db devInvokeSqlMethod', () {
+      const method = 'method';
+      const sql = 'sql';
+      const arguments = [1];
+
+      when(db.devInvokeSqlMethod<void>(method, sql, arguments))
+          .thenAnswer((realInvocation) => Future.value(null));
+
       // ignore: deprecated_member_use_from_same_package
-      briteDb.devInvokeSqlMethod('', '');
-      // ignore: deprecated_member_use
-      verify(db.devInvokeSqlMethod('', '')).called(1);
+      briteDb.devInvokeSqlMethod<void>(method, sql, arguments);
+
+      verify(db.devInvokeSqlMethod<void>(method, sql, arguments)).called(1);
     });
 
     test('delegates to db transaction', () async {
       final action = (Transaction transaction) {
         return transaction.insert(
           'Table',
-          <String, dynamic>{},
+          <String, Object?>{},
         );
       };
+
+      when(db.transaction(action))
+          .thenAnswer((realInvocation) => Future.value(1));
+
       await briteDb.transaction(action);
+
       verify(db.transaction(action)).called(1);
     });
   });

@@ -1,5 +1,5 @@
 class Item {
-  final int id;
+  final int? id;
   final String content;
   final DateTime createdAt;
 

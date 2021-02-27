@@ -1,12 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqlbrite/sqlbrite.dart';
+import 'package:sqlbrite/sqlbrite.dart' show Query;
 
-final isQuery = isInstanceOf<Query>();
+final isQuery = isA<Query>();
 
-class MockDatabase extends Mock implements Database {}
-
-class MockTransaction extends Mock implements Transaction {}
-
-class MockBatch extends Mock implements Batch {}
+@GenerateMocks(
+  [],
+  customMocks: [
+    MockSpec<Database>(),
+    MockSpec<Transaction>(),
+    MockSpec<Batch>(),
+  ],
+)
+// ignore: unused_element
+void _genMocks() {}

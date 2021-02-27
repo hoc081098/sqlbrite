@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:sqlbrite/src/api.dart';
 import 'package:sqlbrite/src/query_stream.dart';
 
@@ -10,7 +10,7 @@ Stream<Query> _queryStream(int numberOfRows) {
     () => Future.value(
       List.filled(
         numberOfRows,
-        <String, dynamic>{},
+        <String, Object?>{},
       ),
     ),
   );
@@ -22,40 +22,38 @@ void main() {
       test('works', () async {
         // emits default value
         final defaultValue = {'default': 42};
-        final stream0 = _queryStream(0).mapToOneOrDefault(
-          (row) => row,
-          defaultValue: defaultValue,
-        );
+        final stream0 =
+            _queryStream(0).mapToOneOrDefault((row) => row, defaultValue);
         await expectLater(
           stream0,
           emits(defaultValue),
         );
 
         // emit mapped value
-        final stream1 = _queryStream(1).mapToOneOrDefault((row) => row);
+        final stream1 = _queryStream(1).mapToOneOrDefault((row) => row, null);
         await expectLater(
           stream1,
-          emits(<String, dynamic>{}),
+          emits(<String, Object?>{}),
         );
 
         // emit error when query returned more than 1 row
-        final stream2 = _queryStream(2).mapToOneOrDefault((row) => row);
+        final stream2 = _queryStream(2).mapToOneOrDefault((row) => row, null);
         await expectLater(
           stream2,
           emitsError(isInstanceOf<StateError>()),
         );
       });
 
-      test('shouldThrowA', () {
-        expect(
-          () => _queryStream(0).mapToOneOrDefault(null),
-          throwsArgumentError,
-        );
-      });
+      // test('shouldThrowA', () {
+      //   expect(
+      //     () => _queryStream(0).mapToOneOrDefault(null, null),
+      //     throwsArgumentError,
+      //   );
+      // });
 
       test('shouldThrowB', () async {
-        final stream =
-            Stream<Query>.error(Exception()).mapToOneOrDefault((_) => true);
+        final stream = Stream<Query>.error(Exception())
+            .mapToOneOrDefault((_) => true, null);
         await expectLater(
           stream,
           emitsError(isA<Exception>()),
@@ -75,10 +73,10 @@ void main() {
           } else {
             return row;
           }
-        });
+        }, null);
         await expectLater(
           stream,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isMap,
             emitsError(isException),
             isMap,
@@ -89,7 +87,7 @@ void main() {
       test('shouldThrowD', () async {
         final queryStream = _queryStream(1)
             .map<Query>((_) => () => Future.error(Exception('Query error')))
-            .mapToOneOrDefault((row) => row);
+            .mapToOneOrDefault((row) => row, null);
 
         await expectLater(
           queryStream,
@@ -100,7 +98,7 @@ void main() {
       test('shouldThrowE', () async {
         final queryStream = _queryStream(1)
             .map<Query>((_) => () => throw Exception('Query error'))
-            .mapToOneOrDefault((row) => row);
+            .mapToOneOrDefault((row) => row, null);
 
         await expectLater(
           queryStream,
@@ -111,7 +109,7 @@ void main() {
       test('isBroadcast', () async {
         final broadcastController = StreamController<Query>.broadcast();
         final stream1 = broadcastController.stream
-            .mapToOneOrDefault((row) => row)
+            .mapToOneOrDefault((row) => row, null)
               ..listen(null);
         expect(
           stream1.isBroadcast,
@@ -119,19 +117,21 @@ void main() {
         );
 
         final controller = StreamController<Query>();
-        final stream2 = controller.stream.mapToOneOrDefault((row) => row)
+        final stream2 = controller.stream.mapToOneOrDefault((row) => row, null)
           ..listen(null);
         expect(
           stream2.isBroadcast,
           isFalse,
         );
 
-        await Future.wait([broadcastController.close(), controller.close()]);
+        await Future.wait<void>(
+            [broadcastController.close(), controller.close()]);
       });
 
       test('asBroadcastStream', () async {
-        final stream =
-            _queryStream(1).mapToOneOrDefault((row) => row).asBroadcastStream();
+        final stream = _queryStream(1)
+            .mapToOneOrDefault((row) => row, null)
+            .asBroadcastStream();
 
         // listen twice on same stream
         stream.listen(null);
@@ -142,11 +142,11 @@ void main() {
       });
 
       test('pause.resume', () async {
-        StreamSubscription subscription;
+        late StreamSubscription<Map<String, Object?>?> subscription;
 
         subscription = _queryStream(1)
             .delay(const Duration(milliseconds: 500))
-            .mapToOneOrDefault((i) => i)
+            .mapToOneOrDefault((i) => i, null)
             .listen(
           expectAsync1(
             (data) {
@@ -167,14 +167,14 @@ void main() {
         final stream0 = _queryStream(0).mapToOne((row) => row);
         await expectLater(
           stream0,
-          emitsDone,
+          emitsError(isStateError),
         );
 
         // emit mapped value
         final stream1 = _queryStream(1).mapToOne((row) => row);
         await expectLater(
           stream1,
-          emits(<String, dynamic>{}),
+          emits(<String, Object?>{}),
         );
 
         // emit error when query returned more than 1 row
@@ -185,12 +185,12 @@ void main() {
         );
       });
 
-      test('shouldThrowA', () {
-        expect(
-          () => _queryStream(0).mapToOne(null),
-          throwsArgumentError,
-        );
-      });
+      // test('shouldThrowA', () {
+      //   expect(
+      //     () => _queryStream(0).mapToOne<int?>(null),
+      //     throwsArgumentError,
+      //   );
+      // });
 
       test('shouldThrowB', () async {
         final stream = Stream<Query>.error(Exception()).mapToOne((_) => true);
@@ -216,7 +216,7 @@ void main() {
         });
         await expectLater(
           stream,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isMap,
             emitsError(isException),
             isMap,
@@ -262,7 +262,8 @@ void main() {
           isFalse,
         );
 
-        await Future.wait([broadcastController.close(), controller.close()]);
+        await Future.wait<void>(
+            [broadcastController.close(), controller.close()]);
       });
 
       test('asBroadcastStream', () async {
@@ -278,7 +279,7 @@ void main() {
       });
 
       test('pause.resume', () async {
-        StreamSubscription subscription;
+        late StreamSubscription<Map<String, Object?>> subscription;
 
         subscription = _queryStream(1)
             .delay(const Duration(milliseconds: 500))
@@ -303,14 +304,14 @@ void main() {
         final stream0 = _queryStream(0).mapToList((row) => row);
         await expectLater(
           stream0,
-          emits([]),
+          emits(<Map<String, Object?>>[]),
         );
 
         // emit list that contains single mapped value
         final stream1 = _queryStream(1).mapToList((row) => row);
         await expectLater(
           stream1,
-          emits([<String, dynamic>{}]),
+          emits([<String, Object?>{}]),
         );
 
         // emit list that contains 2 mapped values
@@ -318,18 +319,18 @@ void main() {
         await expectLater(
           stream2,
           emits([
-            <String, dynamic>{},
-            <String, dynamic>{},
+            <String, Object?>{},
+            <String, Object?>{},
           ]),
         );
       });
 
-      test('shouldThrowA', () {
-        expect(
-          () => _queryStream(0).mapToList(null),
-          throwsArgumentError,
-        );
-      });
+      // test('shouldThrowA', () {
+      //   expect(
+      //     () => _queryStream(0).mapToList<int>(null),
+      //     throwsArgumentError,
+      //   );
+      // });
 
       test('shouldThrowB', () async {
         final stream = Stream<Query>.error(Exception()).mapToList((_) => true);
@@ -355,10 +356,10 @@ void main() {
         });
         await expectLater(
           stream,
-          emitsInOrder([
-            [<String, dynamic>{}],
+          emitsInOrder(<Object>[
+            [<String, Object?>{}],
             emitsError(isException),
-            [<String, dynamic>{}],
+            [<String, Object?>{}],
           ]),
         );
       });
@@ -401,7 +402,8 @@ void main() {
           isFalse,
         );
 
-        await Future.wait([broadcastController.close(), controller.close()]);
+        await Future.wait<void>(
+            [broadcastController.close(), controller.close()]);
       });
 
       test('asBroadcastStream', () async {
@@ -417,7 +419,7 @@ void main() {
       });
 
       test('pause.resume', () async {
-        StreamSubscription subscription;
+        late StreamSubscription<List<Map<String, Object?>>> subscription;
 
         subscription = _queryStream(1)
             .delay(const Duration(milliseconds: 500))

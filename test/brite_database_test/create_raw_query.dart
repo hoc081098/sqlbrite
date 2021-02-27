@@ -5,15 +5,18 @@ import 'package:sqlbrite/src/brite_database.dart';
 import 'package:sqlbrite/src/query_stream.dart';
 
 import '../mocks.dart';
+import '../mocks.mocks.dart';
 
 void main() {
   group('CreateRawQuery', () {
-    Database db;
-    BriteDatabase briteDb;
+    late Database db;
+    late BriteDatabase briteDb;
+    late Map<String, Object?>? defaultValue;
 
     setUp(() {
       db = MockDatabase();
       briteDb = BriteDatabase(db);
+      defaultValue = null;
     });
 
     test('Delegates to db rawQuery', () async {
@@ -44,19 +47,19 @@ void main() {
 
     group('Insert', () {
       test('Triggers query again on insert', () async {
-        when(db.insert('Table', <String, dynamic>{}))
+        when(db.insert('Table', <String, Object?>{}))
             .thenAnswer((_) => Future.value(0));
 
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
         );
 
-        await briteDb.insert('Table', <String, dynamic>{});
+        await briteDb.insert('Table', <String, Object?>{});
         await expect;
       });
 
@@ -65,7 +68,7 @@ void main() {
 
         // mocking insert
         var id = 0;
-        when(db.insert(table, <String, dynamic>{}))
+        when(db.insert(table, <String, Object?>{}))
             .thenAnswer((_) => Future.value(id++));
 
         // mocking query
@@ -73,31 +76,36 @@ void main() {
         when(db.rawQuery('sql')).thenAnswer(
           (_) {
             ++count;
-            return count.isEven
-                ? Future.delayed(
-                    const Duration(milliseconds: 100),
-                    () => [
+            return Future.delayed(
+              const Duration(milliseconds: 100),
+              () => count.isEven
+                  ? [
                       {'count': count}
-                    ],
-                  )
-                : null;
+                    ]
+                  : [],
+            );
           },
         );
 
         final stream$ = briteDb.createRawQuery([table], 'sql');
         final ex = expectLater(
-          stream$.mapToOneOrDefault((r) => r),
-          emitsInOrder([
+          stream$.mapToOneOrDefault((r) => r, defaultValue),
+          emitsInOrder(<Object?>[
+            defaultValue,
             {'count': 2},
+            defaultValue,
             {'count': 4},
+            defaultValue,
             {'count': 6},
+            defaultValue,
             {'count': 8},
+            defaultValue,
             {'count': 10},
           ]),
         );
 
         for (var i = 0; i < 10; i++) {
-          await briteDb.insert(table, <String, dynamic>{});
+          await briteDb.insert(table, <String, Object?>{});
         }
 
         await ex;
@@ -110,7 +118,7 @@ void main() {
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
@@ -128,7 +136,7 @@ void main() {
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
@@ -149,25 +157,30 @@ void main() {
         when(db.rawQuery('sql')).thenAnswer(
           (_) {
             ++count;
-            return count.isEven
-                ? Future.delayed(
-                    const Duration(milliseconds: 100),
-                    () => [
+            return Future.delayed(
+              const Duration(milliseconds: 100),
+              () => count.isEven
+                  ? [
                       {'count': count}
-                    ],
-                  )
-                : null;
+                    ]
+                  : [],
+            );
           },
         );
 
         final stream$ = briteDb.createRawQuery([table], 'sql');
         final ex = expectLater(
-          stream$.mapToOneOrDefault((r) => r),
-          emitsInOrder([
+          stream$.mapToOneOrDefault((r) => r, defaultValue),
+          emitsInOrder(<Object?>[
+            defaultValue,
             {'count': 2},
+            defaultValue,
             {'count': 4},
+            defaultValue,
             {'count': 6},
+            defaultValue,
             {'count': 8},
+            defaultValue,
             {'count': 10},
           ]),
         );
@@ -185,7 +198,7 @@ void main() {
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
@@ -203,7 +216,7 @@ void main() {
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
@@ -217,7 +230,7 @@ void main() {
         const table = 'Table';
 
         // mocking update
-        when(db.update(table, <String, dynamic>{}))
+        when(db.update(table, <String, Object?>{}))
             .thenAnswer((_) => Future.value(1));
 
         // mocking query
@@ -225,31 +238,36 @@ void main() {
         when(db.rawQuery('sql')).thenAnswer(
           (_) {
             ++count;
-            return count.isEven
-                ? Future.delayed(
-                    const Duration(milliseconds: 100),
-                    () => [
+            return Future.delayed(
+              const Duration(milliseconds: 100),
+              () => count.isEven
+                  ? [
                       {'count': count}
-                    ],
-                  )
-                : null;
+                    ]
+                  : [],
+            );
           },
         );
 
         final stream$ = briteDb.createRawQuery([table], 'sql');
         final ex = expectLater(
-          stream$.mapToOneOrDefault((r) => r),
-          emitsInOrder([
+          stream$.mapToOneOrDefault((r) => r, defaultValue),
+          emitsInOrder(<Object?>[
+            defaultValue,
             {'count': 2},
+            defaultValue,
             {'count': 4},
+            defaultValue,
             {'count': 6},
+            defaultValue,
             {'count': 8},
+            defaultValue,
             {'count': 10},
           ]),
         );
 
         for (var i = 0; i < 10; i++) {
-          await briteDb.update(table, <String, dynamic>{});
+          await briteDb.update(table, <String, Object?>{});
         }
 
         await ex;
@@ -261,7 +279,7 @@ void main() {
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
           stream$,
-          emitsInOrder([
+          emitsInOrder(<Matcher>[
             isQuery,
             isQuery,
           ]),
@@ -278,7 +296,7 @@ void main() {
       final stream$ = briteDb.createRawQuery(['Table'], 'sql');
       final expect = expectLater(
         stream$,
-        emitsInOrder([
+        emitsInOrder(<Matcher>[
           isQuery,
           isQuery,
         ]),
