@@ -25,24 +25,31 @@ Stream<T> _queryToOneStreamTransformer<T>(
   StreamSubscription<Query>? subscription;
 
   void add(List<Map<String, Object?>> rows) {
-    if (rows.length > 1) {
+    final length = rows.length;
+
+    if (length > 1) {
       controller.addError(StateError('Query returned more than 1 row'));
       return;
     }
 
-    if (rows.isEmpty) {
+    if (length == 0) {
       if (defaultValue != null) {
         controller.add(defaultValue.value);
       } else {
         controller.addError(StateError('Query returned 0 row'));
       }
-    } else {
-      try {
-        controller.add(rowMapper(rows.first));
-      } catch (e, s) {
-        controller.addError(e, s);
-      }
+      return;
     }
+
+    T result;
+    try {
+      result = rowMapper(rows[0]);
+    } catch (e, s) {
+      controller.addError(e, s);
+      return;
+    }
+
+    controller.add(result);
   }
 
   controller.onListen = () {
