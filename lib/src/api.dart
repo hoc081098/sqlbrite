@@ -1,4 +1,4 @@
-import 'package:meta/meta.dart' show internal, visibleForOverriding;
+import 'package:meta/meta.dart' show visibleForOverriding;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import 'brite_batch.dart';
@@ -194,7 +194,6 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
 
   /// Override this method to send notifications
   @visibleForOverriding
-  @internal
   void sendTableTrigger(Iterable<String> tables);
 
   @override

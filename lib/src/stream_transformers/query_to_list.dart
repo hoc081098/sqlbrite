@@ -2,9 +2,6 @@ import 'dart:async';
 
 import '../api.dart';
 
-// TODO: Remove assert
-// ignore_for_file: unnecessary_null_comparison
-
 /// Transform [Query] to list of values.
 /// [Stream<Query>] to [Stream<List<T>>].
 extension MapToListQueryStreamExtensions on Stream<Query> {
@@ -13,8 +10,6 @@ extension MapToListQueryStreamExtensions on Stream<Query> {
   /// emitted [Query] to a [List<T>].
   ///
   Stream<List<T>> mapToList<T>(T Function(Map<String, Object?> row) rowMapper) {
-    assert(rowMapper != null);
-
     final controller = isBroadcast
         ? StreamController<List<T>>.broadcast(sync: true)
         : StreamController<List<T>>(sync: true);
