@@ -27,7 +27,7 @@ Future<Database> _open() async {
       );
 
       final batch = db.batch();
-      for (int i = 0; i < 10; i++) {
+      for (var i = 0; i < 10; i++) {
         batch.insert(
           _tableItems,
           Item(

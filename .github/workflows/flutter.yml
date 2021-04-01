@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: subosito/flutter-action@v1.4.0
+        with:
+          channel: 'stable'
+
+      - name: Doctor
+        run: flutter doctor
+
+      - name: Install dependencies
+        run: flutter packages get
+
+      - name: Format
+        run: flutter format lib test example --set-exit-if-changed
+
+      - name: Analyze
+        run: flutter analyze lib test example
+
+      - name: Run tests
+        run: flutter test --coverage --coverage-path=lcov.info
+
+      - uses: codecov/codecov-action@v1
