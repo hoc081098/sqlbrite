@@ -44,6 +44,7 @@ import 'package:sqlbrite/sqlbrite.dart';
 ```dart
 final Database db = await openDb();
 final briteDb = BriteDatabase(db);
+final briteDb = BriteDatabase(db, logger: null); // disable logging.
 ```
 
 ### 2. Using

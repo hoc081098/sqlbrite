@@ -10,6 +10,8 @@
 ///
 library sqlbrite;
 
+export 'package:sqflite/sqflite.dart';
+
 export 'src/api.dart';
 export 'src/brite_database.dart';
 export 'src/query_stream.dart';
