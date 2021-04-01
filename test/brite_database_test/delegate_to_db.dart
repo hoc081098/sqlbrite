@@ -253,7 +253,7 @@ void main() {
       when(db.devInvokeMethod<void>(method, arguments))
           .thenAnswer((realInvocation) => Future.value(null));
 
-      // ignore: deprecated_member_use_from_same_package
+      // ignore: deprecated_member_use, deprecated_member_use_from_same_package
       briteDb.devInvokeMethod<void>(method, arguments);
 
       verify(db.devInvokeMethod<void>(method, arguments)).called(arguments);
@@ -267,7 +267,7 @@ void main() {
       when(db.devInvokeSqlMethod<void>(method, sql, arguments))
           .thenAnswer((realInvocation) => Future.value(null));
 
-      // ignore: deprecated_member_use_from_same_package
+      // ignore: deprecated_member_use, deprecated_member_use_from_same_package
       briteDb.devInvokeSqlMethod<void>(method, sql, arguments);
 
       verify(db.devInvokeSqlMethod<void>(method, sql, arguments)).called(1);

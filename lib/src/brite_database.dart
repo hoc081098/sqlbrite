@@ -6,9 +6,6 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 import 'api.dart';
 import 'brite_transaction.dart';
 
-// TODO: Remove assert
-// ignore_for_file: unnecessary_null_comparison
-
 /// Logs changed tables or sent query.
 typedef BriteDatabaseLogger = void Function(String message);
 
@@ -34,8 +31,7 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
   /// Construct a [BriteDatabase] backed by a [sqlite_api.Database].
   /// To disable logging, pass `null` to [logger].
   BriteDatabase(this._db, {BriteDatabaseLogger? logger = print})
-      : assert(_db != null),
-        logger = logger,
+      : logger = logger,
         super(_db) {
     if (logger != null) {
       final description = 'Changed tables'.padRight(_width, ' ');

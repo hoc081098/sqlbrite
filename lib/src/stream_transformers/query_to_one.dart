@@ -2,9 +2,6 @@ import 'dart:async';
 
 import '../api.dart';
 
-// TODO: Remove assert
-// ignore_for_file: unnecessary_null_comparison
-
 class _Wrapper<T> {
   final T value;
 
@@ -17,8 +14,6 @@ Stream<T> _queryToOneStreamTransformer<T>(
   final T Function(Map<String, Object?> row) rowMapper,
   final _Wrapper<T>? defaultValue,
 ) {
-  assert(rowMapper != null);
-
   final controller = stream.isBroadcast
       ? StreamController<T>.broadcast(sync: true)
       : StreamController<T>(sync: true);
