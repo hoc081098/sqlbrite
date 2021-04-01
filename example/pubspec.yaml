@@ -15,6 +15,7 @@ dependencies:
   intl: ^0.17.0
   sqlbrite:
     path: ../
+  pedantic: ^1.10.0
 
 dev_dependencies:
   flutter_test:
