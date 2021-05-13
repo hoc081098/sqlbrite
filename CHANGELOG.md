@@ -1,3 +1,7 @@
+## 2.1.0 - May 13, 2021
+
+*   Update `rxdart` to `0.27.0`.
+
 ## 2.0.0 - Apr 01, 2021
 
 *   Stable release for null safety.

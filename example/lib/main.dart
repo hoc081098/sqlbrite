@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         constraints: BoxConstraints.expand(),
         child: StreamBuilder<List<Item>?>(
           stream: items$,
-          initialData: items$.requireValue,
+          initialData: items$.value,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(

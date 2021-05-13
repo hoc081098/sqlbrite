@@ -9,17 +9,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.3
   path_provider: ^2.0.1
   path: ^1.8.0
   intl: ^0.17.0
   sqlbrite:
-    path: ../
   pedantic: ^1.11.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  sqlbrite:
+    path: ../
 
 flutter:
   uses-material-design: true
