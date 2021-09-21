@@ -16,16 +16,16 @@ void main() {
     });
 
     test('delegates to db query', () async {
-      final table = 'Table';
-      final distinct = true;
+      const table = 'Table';
+      const distinct = true;
       final columns = ['column'];
-      final where = 'where';
+      const where = 'where';
       final whereArgs = ['whereArg'];
-      final groupBy = 'groupBy';
-      final having = 'having';
-      final orderBy = 'orderBy';
-      final limit = 1;
-      final offset = 1;
+      const groupBy = 'groupBy';
+      const having = 'having';
+      const orderBy = 'orderBy';
+      const limit = 1;
+      const offset = 1;
 
       when(
         db.query(
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('delegates to db rawQuery', () async {
-      final sql = 'sql';
+      const sql = 'sql';
       final arguments = ['whereArg'];
 
       when(
@@ -274,12 +274,12 @@ void main() {
     });
 
     test('delegates to db transaction', () async {
-      final action = (Transaction transaction) {
+      Future<int> action(Transaction transaction) {
         return transaction.insert(
           'Table',
           <String, Object?>{},
         );
-      };
+      }
 
       when(db.transaction(action))
           .thenAnswer((realInvocation) => Future.value(1));

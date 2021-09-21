@@ -40,7 +40,7 @@ Future<Database> _open() async {
         continueOnError: true,
         noResult: false,
       );
-      print('Batch result: $list');
+      debugPrint('Batch result: $list');
     },
   );
 }
