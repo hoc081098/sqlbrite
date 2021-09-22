@@ -110,7 +110,7 @@ void main() {
         final broadcastController = StreamController<Query>.broadcast();
         final stream1 = broadcastController.stream
             .mapToOneOrDefault((row) => row, null)
-              ..listen(null);
+          ..listen(null);
         expect(
           stream1.isBroadcast,
           isTrue,

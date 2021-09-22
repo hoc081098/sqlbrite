@@ -30,9 +30,8 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
 
   /// Construct a [BriteDatabase] backed by a [sqlite_api.Database].
   /// To disable logging, pass `null` to [logger].
-  BriteDatabase(this._db, {BriteDatabaseLogger? logger = print})
-      : logger = logger,
-        super(_db) {
+  BriteDatabase(this._db, {this.logger = print}) : super(_db) {
+    final logger = this.logger;
     if (logger != null) {
       final description = 'Changed tables'.padRight(_width, ' ');
 
@@ -114,12 +113,12 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
     await _db.close();
   }
 
-  @deprecated
+  @Deprecated('Dev only')
   @override
   Future<T> devInvokeMethod<T>(String method, [Object? arguments]) =>
       _db.devInvokeMethod(method, arguments);
 
-  @deprecated
+  @Deprecated('Dev only')
   @override
   Future<T> devInvokeSqlMethod<T>(String method, String sql,
           [List<Object?>? arguments]) =>

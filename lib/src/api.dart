@@ -1,4 +1,6 @@
-import 'package:meta/meta.dart' show visibleForOverriding;
+// ignore_for_file: unused_result
+
+import 'package:meta/meta.dart' show internal, useResult;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
 import 'brite_batch.dart';
@@ -31,6 +33,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   /// Warning: this method does not perform the query! Only by subscribing to the returned
   /// Stream will the operation occur.
   ///
+  @useResult
   Stream<Query> createQuery(
     String table, {
     bool? distinct,
@@ -47,6 +50,7 @@ abstract class IBriteDatabase implements sqlite_api.Database {
   ///
   /// Like [IBriteDatabase.createQuery].
   ///
+  @useResult
   Stream<Query> createRawQuery(
     Iterable<String> tables,
     String sql, [
@@ -193,7 +197,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   const AbstractBriteDatabaseExecutor(this._delegate);
 
   /// Override this method to send notifications
-  @visibleForOverriding
+  @internal
   void sendTableTrigger(Iterable<String> tables);
 
   @override

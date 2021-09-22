@@ -1,4 +1,9 @@
-include: package:pedantic/analysis_options.1.11.0.yaml
+include: package:flutter_lints/flutter.yaml
 linter:
   rules:
     - prefer_final_locals
+    # https://github.com/dart-lang/lints#migrating-from-packagepedantic
+    - always_declare_return_types
+    - prefer_single_quotes
+    - unawaited_futures
+    - unsafe_html
