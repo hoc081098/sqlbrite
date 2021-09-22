@@ -1,3 +1,15 @@
+## 2.2.0 - Sep 22, 2021
+
+*   Update dependencies
+    * `rxdart_ext` to `0.1.2`
+    * `sqflite` to `2.0.0+4`
+    * `meta` to `1.7.0`
+    * `rxdart` to `0.27.2`
+
+*   Change sdk constraint `>=2.14.0 <3.0.0` and flutter constraint `>=2.5.0`.
+*   Migrated from `pedantic` to `flutter_lints`.
+*   Updated example.
+
 ## 2.1.0 - May 13, 2021
 
 *   Update `rxdart` to `0.27.0`.

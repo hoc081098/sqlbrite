@@ -9,13 +9,13 @@ extension MapToListQueryStreamExtensions on Stream<Query> {
   /// Given a function mapping the current row to T, transform each
   /// emitted [Query] to a [List<T>].
   ///
-  Stream<List<T>> mapToList<T>(T Function(Map<String, Object?> row) rowMapper) {
+  Stream<List<T>> mapToList<T>(T Function(JSON row) rowMapper) {
     final controller = isBroadcast
         ? StreamController<List<T>>.broadcast(sync: true)
         : StreamController<List<T>>(sync: true);
     StreamSubscription<Query>? subscription;
 
-    void add(List<Map<String, Object?>> rows) {
+    void add(List<JSON> rows) {
       try {
         final items = rows.map((row) => rowMapper(row));
         controller.add(List.unmodifiable(items));
@@ -27,7 +27,7 @@ extension MapToListQueryStreamExtensions on Stream<Query> {
     controller.onListen = () {
       subscription = listen(
         (query) {
-          Future<List<Map<String, Object?>>> future;
+          Future<List<JSON>> future;
 
           try {
             future = query();

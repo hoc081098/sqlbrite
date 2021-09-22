@@ -57,7 +57,7 @@ final briteDb = BriteDatabase(db, logger: null); // disable logging.
 class Entity {
   factory Entity.fromJson(Map<String, dynamic> map) { ... }
   
-  factory Entity.default() { ... }
+  factory Entity.empty() { ... }
 
   Map<String, dynamic> toJson() { ... }
 }
@@ -84,7 +84,7 @@ final Stream<Entity> singleOrDefaultQuery$ = briteDb.createQuery(
   limit: 1,
 ).mapToOneOrDefault(
   (row) => Entity.fromJson(row),
-  defaultValue: Entity.default()
+  defaultValue: Entity.empty()
 );
 ```
 

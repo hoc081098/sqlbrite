@@ -6,6 +6,9 @@ import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 import 'brite_batch.dart';
 import 'brite_transaction.dart';
 
+/// JSON Object
+typedef JSON = Map<String, dynamic>;
+
 ///
 /// Lazy query.
 ///
@@ -13,7 +16,7 @@ import 'brite_transaction.dart';
 /// and returns a Future that completes with a list of map
 /// or an error.
 ///
-typedef Query = Future<List<Map<String, Object?>>> Function();
+typedef Query = Future<List<JSON>> Function();
 
 ///
 /// Database to send sql commands, created during [openDatabase]
@@ -254,7 +257,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   @override
   Future<int> update(
     String table,
-    Map<String, Object?> values, {
+    JSON values, {
     String? where,
     List<Object?>? whereArgs,
     sqlite_api.ConflictAlgorithm? conflictAlgorithm,
@@ -290,14 +293,14 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   }
 
   @override
-  Future<List<Map<String, Object?>>> rawQuery(
+  Future<List<JSON>> rawQuery(
     String sql, [
     List<Object?>? arguments,
   ]) =>
       _delegate.rawQuery(sql, arguments);
 
   @override
-  Future<List<Map<String, Object?>>> query(
+  Future<List<JSON>> query(
     String table, {
     bool? distinct,
     List<String>? columns,
@@ -326,7 +329,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
   @override
   Future<int> insert(
     String table,
-    Map<String, Object?> values, {
+    JSON values, {
     String? nullColumnHack,
     sqlite_api.ConflictAlgorithm? conflictAlgorithm,
   }) async {

@@ -47,7 +47,7 @@ class BriteBatch implements IBriteBatch {
   @override
   void insert(
     String table,
-    Map<String, Object?> values, {
+    JSON values, {
     String? nullColumnHack,
     sqlite_api.ConflictAlgorithm? conflictAlgorithm,
   }) {
@@ -110,7 +110,7 @@ class BriteBatch implements IBriteBatch {
   @override
   void update(
     String table,
-    Map<String, dynamic> values, {
+    JSON values, {
     String? where,
     List<Object?>? whereArgs,
     sqlite_api.ConflictAlgorithm? conflictAlgorithm,
