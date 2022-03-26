@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rxdart_ext: ^0.1.2
+  rxdart_ext: ^0.2.0
   sqflite: ^2.0.0+4
   meta: ^1.7.0
 
