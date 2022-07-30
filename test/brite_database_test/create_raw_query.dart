@@ -20,6 +20,11 @@ void main() {
     });
 
     test('Delegates to db rawQuery', () async {
+      when(db.rawQuery(
+        'sql',
+        ['whereArg'],
+      )).thenAnswer((_) => Future.value([]));
+
       final stream = briteDb.createRawQuery(
         ['Table'],
         'sql',
@@ -112,8 +117,7 @@ void main() {
       });
 
       test('Triggers query again on rawInsertAndTrigger', () async {
-        when(db.insert('Table', <String, Object>{}))
-            .thenAnswer((_) => Future.value(0));
+        when(db.rawInsert('sql')).thenAnswer((_) => Future.value(0));
 
         final stream$ = briteDb.createRawQuery(['Table'], 'sql');
         final expect = expectLater(
@@ -124,7 +128,7 @@ void main() {
           ]),
         );
 
-        await briteDb.rawInsertAndTrigger(['Table'], '');
+        await briteDb.rawInsertAndTrigger(['Table'], 'sql');
         await expect;
       });
     });

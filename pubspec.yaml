@@ -23,4 +23,6 @@ dev_dependencies:
   mockito: ^5.3.0
   flutter_lints: ^1.0.4
   build_runner: ^2.2.0
+  analyzer: ^4.2.0
+  code_builder: ^4.2.0
   # flutter packages pub run build_runner build --delete-conflicting-outputs
