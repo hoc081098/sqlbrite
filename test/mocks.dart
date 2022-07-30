@@ -3,8 +3,6 @@ import 'package:mockito/annotations.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart' show Query;
 import 'dart:async' as _i3;
-import 'package:mockito/mockito.dart' as _i1;
-import 'package:sqflite_common/sql.dart' as _i4;
 import 'package:sqflite_common/sqlite_api.dart' as _i2;
 
 final isQuery = isA<Query>();
