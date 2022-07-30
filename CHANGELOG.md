@@ -1,3 +1,11 @@
+## 2.3.0 - Sep 22, 2021
+
+*   Update dependencies
+    * `rxdart_ext: ^0.2.5` (~ `rxdart: ^0.27.5`).
+    * `sqflite: ^2.0.3`.
+
+*   Update `Dart SDK` constraint to `'>=2.16.0 <3.0.0'` and `Flutter` constraint to `'>=3.0.0'`.
+
 ## 2.2.0 - Sep 22, 2021
 
 *   Update dependencies
