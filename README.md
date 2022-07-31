@@ -3,6 +3,7 @@
 ## Author: [Petrus Nguyễn Thái Học](https://github.com/hoc081098)
 
 [![Tests](https://github.com/hoc081098/sqlbrite/actions/workflows/flutter.yml/badge.svg)](https://github.com/hoc081098/sqlbrite/actions/workflows/flutter.yml)
+[![Build example](https://github.com/hoc081098/sqlbrite/actions/workflows/build-example.yml/badge.svg)](https://github.com/hoc081098/sqlbrite/actions/workflows/build-example.yml)
 [![Pub](https://img.shields.io/pub/v/sqlbrite)](https://pub.dev/packages/sqlbrite)
 [![Pub](https://img.shields.io/pub/v/sqlbrite?include_prereleases)](https://pub.dev/packages/sqlbrite)
 [![Build Status](https://travis-ci.com/hoc081098/sqlbrite.svg?branch=master)](https://travis-ci.com/hoc081098/sqlbrite)
