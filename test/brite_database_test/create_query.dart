@@ -20,6 +20,19 @@ void main() {
     });
 
     test('Delegates to db query', () async {
+      when(db.query(
+        'Table',
+        distinct: true,
+        columns: ['column'],
+        where: 'where',
+        whereArgs: ['whereArg'],
+        groupBy: 'groupBy',
+        having: 'having',
+        orderBy: 'orderBy',
+        limit: 1,
+        offset: 1,
+      )).thenAnswer((_) => Future.value([]));
+
       final stream$ = briteDb.createQuery(
         'Table',
         distinct: true,
@@ -128,8 +141,7 @@ void main() {
       });
 
       test('Triggers query again on rawInsertAndTrigger', () async {
-        when(db.insert('Table', <String, Object>{}))
-            .thenAnswer((_) => Future.value(0));
+        when(db.rawInsert('sql')).thenAnswer((_) => Future.value(0));
 
         final stream$ = briteDb.createQuery('Table');
         final expect = expectLater(
@@ -140,7 +152,7 @@ void main() {
           ]),
         );
 
-        await briteDb.rawInsertAndTrigger(['Table'], '');
+        await briteDb.rawInsertAndTrigger(['Table'], 'sql');
         await expect;
       });
     });
