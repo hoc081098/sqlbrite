@@ -18,6 +18,7 @@ dependencies:
   flutter_lints: ^2.0.1
   rxdart_ext: ^0.2.5
   collection: ^1.16.0
+  platform: ^3.1.0
 
 dev_dependencies:
   flutter_test:
