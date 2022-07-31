@@ -1,4 +1,4 @@
-## 2.3.0 - Sep 22, 2021
+## 2.3.0 - Jul 31, 2022
 
 *   Update dependencies
     * `rxdart_ext: ^0.2.5` (~ `rxdart: ^0.27.5`).
