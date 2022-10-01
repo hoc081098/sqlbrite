@@ -1,3 +1,10 @@
+## 2.4.0 - Oct 1, 2022
+
+*   Update dependencies
+    * `sqflite: ^2.1.0`.
+
+*   Update `Dart SDK` constraint to `'>=2.18.0 <3.0.0'` and `Flutter` constraint to `'>=3.3.0'`.
+
 ## 2.3.0 - Jul 31, 2022
 
 *   Update dependencies
