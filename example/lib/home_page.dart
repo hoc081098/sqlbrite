@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return Center(
                 child: Text(
                   'Error: ${state.error!.error}',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
               );

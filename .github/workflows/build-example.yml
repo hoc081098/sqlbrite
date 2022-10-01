@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        channel: [ 'stable', 'beta' ]
+        channel: [ 'stable' ]
     defaults:
       run:
         working-directory: ./example

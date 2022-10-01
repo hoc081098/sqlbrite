@@ -164,4 +164,16 @@ class BriteBatch implements IBriteBatch {
     execute(sql, arguments);
     _tables.addAll(tables);
   }
+
+  @override
+  Future<List<Object?>> apply({bool? noResult, bool? continueOnError}) async {
+    final result = await _delegate.apply(
+      noResult: noResult,
+      continueOnError: continueOnError,
+    );
+
+    _executor.sendTableTrigger(_tables);
+
+    return result;
+  }
 }

@@ -26,6 +26,9 @@ jobs:
       - name: Doctor
         run: flutter doctor
 
+      - name: Setup libsqlite3 and libsqlite3-dev
+        run: sudo apt-get -y install libsqlite3-0 libsqlite3-dev
+
       - name: Install dependencies
         run: flutter packages get
 
