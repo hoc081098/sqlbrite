@@ -22,12 +22,15 @@ void main() {
     test('trigger query again after batch is committed', () async {
       const streamTable = 'Test_stream';
       const testTable = 'Test';
+      const placeholderTable = 'Placeholder';
 
       briteDb =
           BriteDatabase(await initDeleteDbAndOpen('batch_transaction.db'));
 
       await briteDb.execute(
           'CREATE TABLE $streamTable (id INTEGER PRIMARY KEY, name TEXT)');
+      await briteDb
+          .execute('CREATE TABLE $placeholderTable (id INTEGER PRIMARY KEY)');
 
       final streamBatch = briteDb.batch();
       final stream$ = briteDb.createQuery(streamTable);
@@ -58,6 +61,7 @@ void main() {
         where: 'id = ?',
         whereArgs: [1],
       );
+      streamBatch.delete(placeholderTable);
 
       // ...trigger
       streamBatch
@@ -96,6 +100,7 @@ void main() {
           1, // insert
           1, // update
           1, // update
+          0, // delete
           null, // execute - select
           null, // execute - select
           1, // delete
