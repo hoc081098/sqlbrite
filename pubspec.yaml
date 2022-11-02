@@ -4,6 +4,8 @@ version: 2.5.0
 homepage: https://github.com/hoc081098/sqlbrite.git
 repository: https://github.com/hoc081098/sqlbrite.git
 issue_tracker: https://github.com/hoc081098/sqlbrite/issues
+funding:
+  - https://www.buymeacoffee.com/hoc081098
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
