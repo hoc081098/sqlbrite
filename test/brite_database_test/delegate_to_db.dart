@@ -288,5 +288,93 @@ void main() {
 
       verify(db.transaction(action)).called(1);
     });
+
+    test('delegates to db queryCursor', () async {
+      const table = 'Table';
+      const distinct = true;
+      final columns = ['column'];
+      const where = 'where';
+      final whereArgs = ['whereArg'];
+      const groupBy = 'groupBy';
+      const having = 'having';
+      const orderBy = 'orderBy';
+      const limit = 1;
+      const offset = 1;
+      const bufferSize = 1;
+
+      when(
+        db.queryCursor(
+          table,
+          distinct: distinct,
+          columns: columns,
+          where: where,
+          whereArgs: whereArgs,
+          groupBy: groupBy,
+          having: having,
+          orderBy: orderBy,
+          limit: limit,
+          offset: offset,
+          bufferSize: bufferSize,
+        ),
+      ).thenAnswer((_) => Future.value(MockQueryCursor()));
+
+      await briteDb.queryCursor(
+        table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+        bufferSize: bufferSize,
+      );
+
+      verify(
+        db.queryCursor(
+          table,
+          distinct: distinct,
+          columns: columns,
+          where: where,
+          whereArgs: whereArgs,
+          groupBy: groupBy,
+          having: having,
+          orderBy: orderBy,
+          limit: limit,
+          offset: offset,
+          bufferSize: bufferSize,
+        ),
+      ).called(1);
+    });
+
+    test('delegates to db rawQueryCursor', () async {
+      const sql = 'sql';
+      final arguments = ['whereArg'];
+      const bufferSize = 1;
+
+      when(
+        db.rawQueryCursor(
+          sql,
+          arguments,
+          bufferSize: bufferSize,
+        ),
+      ).thenAnswer((_) => Future.value(MockQueryCursor()));
+
+      await briteDb.rawQueryCursor(
+        sql,
+        arguments,
+        bufferSize: bufferSize,
+      );
+
+      verify(
+        db.rawQueryCursor(
+          sql,
+          arguments,
+          bufferSize: bufferSize,
+        ),
+      ).called(1);
+    });
   });
 }

@@ -22,8 +22,13 @@ import 'mocks.dart' as _i4;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeBatch_0 extends _i1.SmartFake implements _i2.Batch {
-  _FakeBatch_0(Object parent, Invocation parentInvocation)
+class _FakeQueryCursor_0 extends _i1.SmartFake implements _i2.QueryCursor {
+  _FakeQueryCursor_0(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
+class _FakeBatch_1 extends _i1.SmartFake implements _i2.Batch {
+  _FakeBatch_1(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
@@ -133,6 +138,57 @@ class MockDatabase extends _i1.Mock implements _i2.Database {
                   <Map<String, Object?>>[]))
           as _i3.Future<List<Map<String, Object?>>>);
   @override
+  _i3.Future<_i2.QueryCursor> rawQueryCursor(
+          String? sql, List<Object?>? arguments, {int? bufferSize}) =>
+      (super.noSuchMethod(Invocation.method(#rawQueryCursor, [sql, arguments], {#bufferSize: bufferSize}),
+          returnValue: _i3.Future<_i2.QueryCursor>.value(_FakeQueryCursor_0(
+              this,
+              Invocation.method(#rawQueryCursor, [sql, arguments],
+                  {#bufferSize: bufferSize})))) as _i3.Future<_i2.QueryCursor>);
+  @override
+  _i3.Future<_i2.QueryCursor> queryCursor(String? table,
+          {bool? distinct,
+          List<String>? columns,
+          String? where,
+          List<Object?>? whereArgs,
+          String? groupBy,
+          String? having,
+          String? orderBy,
+          int? limit,
+          int? offset,
+          int? bufferSize}) =>
+      (super.noSuchMethod(
+          Invocation.method(#queryCursor, [
+            table
+          ], {
+            #distinct: distinct,
+            #columns: columns,
+            #where: where,
+            #whereArgs: whereArgs,
+            #groupBy: groupBy,
+            #having: having,
+            #orderBy: orderBy,
+            #limit: limit,
+            #offset: offset,
+            #bufferSize: bufferSize
+          }),
+          returnValue: _i3.Future<_i2.QueryCursor>.value(_FakeQueryCursor_0(
+              this,
+              Invocation.method(#queryCursor, [
+                table
+              ], {
+                #distinct: distinct,
+                #columns: columns,
+                #where: where,
+                #whereArgs: whereArgs,
+                #groupBy: groupBy,
+                #having: having,
+                #orderBy: orderBy,
+                #limit: limit,
+                #offset: offset,
+                #bufferSize: bufferSize
+              })))) as _i3.Future<_i2.QueryCursor>);
+  @override
   _i3.Future<int> rawUpdate(String? sql, [List<Object?>? arguments]) =>
       (super.noSuchMethod(Invocation.method(#rawUpdate, [sql, arguments]),
           returnValue: _i3.Future<int>.value(0)) as _i3.Future<int>);
@@ -164,7 +220,7 @@ class MockDatabase extends _i1.Mock implements _i2.Database {
           returnValue: _i3.Future<int>.value(0)) as _i3.Future<int>);
   @override
   _i2.Batch batch() => (super.noSuchMethod(Invocation.method(#batch, []),
-          returnValue: _FakeBatch_0(this, Invocation.method(#batch, [])))
+          returnValue: _FakeBatch_1(this, Invocation.method(#batch, [])))
       as _i2.Batch);
 }
 
@@ -234,6 +290,57 @@ class MockTransaction extends _i1.Mock implements _i2.Transaction {
                   <Map<String, Object?>>[]))
           as _i3.Future<List<Map<String, Object?>>>);
   @override
+  _i3.Future<_i2.QueryCursor> rawQueryCursor(
+          String? sql, List<Object?>? arguments, {int? bufferSize}) =>
+      (super.noSuchMethod(Invocation.method(#rawQueryCursor, [sql, arguments], {#bufferSize: bufferSize}),
+          returnValue: _i3.Future<_i2.QueryCursor>.value(_FakeQueryCursor_0(
+              this,
+              Invocation.method(#rawQueryCursor, [sql, arguments],
+                  {#bufferSize: bufferSize})))) as _i3.Future<_i2.QueryCursor>);
+  @override
+  _i3.Future<_i2.QueryCursor> queryCursor(String? table,
+          {bool? distinct,
+          List<String>? columns,
+          String? where,
+          List<Object?>? whereArgs,
+          String? groupBy,
+          String? having,
+          String? orderBy,
+          int? limit,
+          int? offset,
+          int? bufferSize}) =>
+      (super.noSuchMethod(
+          Invocation.method(#queryCursor, [
+            table
+          ], {
+            #distinct: distinct,
+            #columns: columns,
+            #where: where,
+            #whereArgs: whereArgs,
+            #groupBy: groupBy,
+            #having: having,
+            #orderBy: orderBy,
+            #limit: limit,
+            #offset: offset,
+            #bufferSize: bufferSize
+          }),
+          returnValue: _i3.Future<_i2.QueryCursor>.value(_FakeQueryCursor_0(
+              this,
+              Invocation.method(#queryCursor, [
+                table
+              ], {
+                #distinct: distinct,
+                #columns: columns,
+                #where: where,
+                #whereArgs: whereArgs,
+                #groupBy: groupBy,
+                #having: having,
+                #orderBy: orderBy,
+                #limit: limit,
+                #offset: offset,
+                #bufferSize: bufferSize
+              })))) as _i3.Future<_i2.QueryCursor>);
+  @override
   _i3.Future<int> rawUpdate(String? sql, [List<Object?>? arguments]) =>
       (super.noSuchMethod(Invocation.method(#rawUpdate, [sql, arguments]),
           returnValue: _i3.Future<int>.value(0)) as _i3.Future<int>);
@@ -265,7 +372,7 @@ class MockTransaction extends _i1.Mock implements _i2.Transaction {
           returnValue: _i3.Future<int>.value(0)) as _i3.Future<int>);
   @override
   _i2.Batch batch() => (super.noSuchMethod(Invocation.method(#batch, []),
-          returnValue: _FakeBatch_0(this, Invocation.method(#batch, [])))
+          returnValue: _FakeBatch_1(this, Invocation.method(#batch, [])))
       as _i2.Batch);
 }
 
@@ -286,6 +393,13 @@ class MockBatch extends _i1.Mock implements _i2.Batch {
                 #noResult: noResult,
                 #continueOnError: continueOnError
               }),
+              returnValue: _i3.Future<List<Object?>>.value(<Object?>[]))
+          as _i3.Future<List<Object?>>);
+  @override
+  _i3.Future<List<Object?>> apply({bool? noResult, bool? continueOnError}) =>
+      (super.noSuchMethod(
+              Invocation.method(#apply, [],
+                  {#noResult: noResult, #continueOnError: continueOnError}),
               returnValue: _i3.Future<List<Object?>>.value(<Object?>[]))
           as _i3.Future<List<Object?>>);
   @override
@@ -367,4 +481,26 @@ class MockBatch extends _i1.Mock implements _i2.Batch {
   void rawQuery(String? sql, [List<Object?>? arguments]) =>
       super.noSuchMethod(Invocation.method(#rawQuery, [sql, arguments]),
           returnValueForMissingStub: null);
+}
+
+/// A class which mocks [QueryCursor].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockQueryCursor extends _i1.Mock implements _i2.QueryCursor {
+  MockQueryCursor() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  Map<String, Object?> get current =>
+      (super.noSuchMethod(Invocation.getter(#current),
+          returnValue: <String, Object?>{}) as Map<String, Object?>);
+  @override
+  _i3.Future<bool> moveNext() =>
+      (super.noSuchMethod(Invocation.method(#moveNext, []),
+          returnValue: _i3.Future<bool>.value(false)) as _i3.Future<bool>);
+  @override
+  _i3.Future<void> close() => (super.noSuchMethod(Invocation.method(#close, []),
+      returnValue: _i3.Future<void>.value(),
+      returnValueForMissingStub: _i3.Future<void>.value()) as _i3.Future<void>);
 }

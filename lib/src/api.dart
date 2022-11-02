@@ -1,5 +1,7 @@
 // ignore_for_file: unused_result
 
+import 'dart:async';
+
 import 'package:meta/meta.dart' show internal, useResult;
 import 'package:sqflite/sqlite_api.dart' as sqlite_api;
 
@@ -361,4 +363,44 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
     }
     return id;
   }
+
+  @override
+  Future<sqlite_api.QueryCursor> queryCursor(
+    String table, {
+    bool? distinct,
+    List<String>? columns,
+    String? where,
+    List<Object?>? whereArgs,
+    String? groupBy,
+    String? having,
+    String? orderBy,
+    int? limit,
+    int? offset,
+    int? bufferSize,
+  }) =>
+      _delegate.queryCursor(
+        table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+        bufferSize: bufferSize,
+      );
+
+  @override
+  Future<sqlite_api.QueryCursor> rawQueryCursor(
+    String sql,
+    List<Object?>? arguments, {
+    int? bufferSize,
+  }) =>
+      _delegate.rawQueryCursor(
+        sql,
+        arguments,
+        bufferSize: bufferSize,
+      );
 }

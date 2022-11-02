@@ -1,3 +1,8 @@
+## 2.5.0 - Nov 2, 2022
+
+*   Update dependencies
+    * `sqflite: ^2.2.0+3` (implements `Database.queryCursor()` and `Database.rawQueryCursor()`).
+
 ## 2.4.0 - Oct 1, 2022
 
 *   Update dependencies

@@ -19,6 +19,7 @@ final isQuery = isA<Query>();
     ),
     MockSpec<Transaction>(onMissingStub: OnMissingStub.throwException),
     MockSpec<Batch>(onMissingStub: OnMissingStub.throwException),
+    MockSpec<QueryCursor>(onMissingStub: OnMissingStub.throwException),
   ],
 )
 // ignore: unused_element
