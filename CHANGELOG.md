@@ -1,3 +1,8 @@
+## 2.5.1 - Jan 25, 2023
+
+*   Update dependencies
+    * `sqflite: ^2.2.3` (implements `Batch.length`).
+
 ## 2.5.0 - Nov 2, 2022
 
 *   Update dependencies
