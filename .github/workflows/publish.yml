@@ -25,4 +25,4 @@ jobs:
         run: dart pub publish --dry-run
       # Publishing...
       - name: Publish to pub.dev
-        run: dart pub publish
+        run: dart pub publish -f
