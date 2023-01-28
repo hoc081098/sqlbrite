@@ -234,18 +234,6 @@ void main() {
       verify(db.close()).called(1);
     });
 
-    test('delegates to db getVersion', () {
-      when(db.getVersion()).thenAnswer((realInvocation) => Future.value(1));
-      briteDb.getVersion();
-      verify(db.getVersion()).called(1);
-    });
-
-    test('delegates to db setVersion', () {
-      when(db.setVersion(1)).thenAnswer((realInvocation) => Future.value(null));
-      briteDb.setVersion(1);
-      verify(db.setVersion(1)).called(1);
-    });
-
     test('delegates to db devInvokeMethod', () {
       const method = 'method';
       const arguments = 1;

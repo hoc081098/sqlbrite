@@ -268,25 +268,25 @@ packages:
     dependency: transitive
     description:
       name: sqflite
-      sha256: "067ab48dbc66bae05e18073a604443baa35957101bd3905b94f65e764c6d0688"
+      sha256: a33cd945f3de8a46f29d4fd4f21d16361418c47cf04bb6bb6e64a1ff00ca4f74
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.2.4"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: b2ed22d1d62c944ec0dac5cc687ae99cb3331c3ebe146d726ed24704634b5ccd
+      sha256: bfd6973aaeeb93475bc0d875ac9aefddf7965ef22ce09790eb963992ffc5183f
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.2+2"
   sqlbrite:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "2.5.1"
+    version: "2.5.2"
   stack_trace:
     dependency: transitive
     description:

@@ -403,4 +403,7 @@ abstract class AbstractBriteDatabaseExecutor implements BriteDatabaseExecutor {
         arguments,
         bufferSize: bufferSize,
       );
+
+  @override
+  sqlite_api.Database get database => _delegate.database;
 }

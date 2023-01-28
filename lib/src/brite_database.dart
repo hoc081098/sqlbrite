@@ -125,16 +125,10 @@ class BriteDatabase extends AbstractBriteDatabaseExecutor
       _db.devInvokeSqlMethod(method, sql, arguments);
 
   @override
-  Future<int> getVersion() => _db.getVersion();
-
-  @override
   bool get isOpen => _db.isOpen;
 
   @override
   String get path => _db.path;
-
-  @override
-  Future<void> setVersion(int version) => _db.setVersion(version);
 
   @override
   Future<T> transaction<T>(
