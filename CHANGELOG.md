@@ -1,3 +1,8 @@
+## 2.7.0 - Mar 6, 2024
+
+*  Update dependencies: `sqflite: ^2.3.2` (implements `Database.readTransaction` method).
+*  Update `Dart SDK` constraint to `'>=3.0.0 <4.0.0'`, and `Flutter` constraint to `'>=3.10.0'`.
+
 ## 2.6.0 - Jan 28, 2023
 
 *   Update dependencies: `sqflite: ^2.2.4`. Because `sqflite` does not follow semantic versioning, this is a breaking change.
