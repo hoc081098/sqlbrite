@@ -15,7 +15,7 @@ class BriteBatch implements IBriteBatch {
   BriteBatch(this._executor, this._delegate);
 
   @override
-  Future<List> commit({
+  Future<List<Object?>> commit({
     bool? exclusive,
     bool? noResult,
     bool? continueOnError,
