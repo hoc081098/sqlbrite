@@ -14,7 +14,7 @@ jobs:
     steps:
       # Checkout repository
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2.13.0
+      - uses: subosito/flutter-action@v2.16.0
         with:
           channel: 'stable'
       # Setup Dart SDK with JWT token
