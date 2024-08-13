@@ -1,6 +1,6 @@
 name: sqlbrite
 description: RxDart Reactive stream sqflite(sqlite) for Flutter - Sqlbrite for flutter - A lightweight wrapper around sqflite which introduces reactive stream semantics to SQL operations.
-version: 2.7.0
+version: 2.8.0
 homepage: https://github.com/hoc081098/sqlbrite.git
 repository: https://github.com/hoc081098/sqlbrite.git
 issue_tracker: https://github.com/hoc081098/sqlbrite/issues
@@ -14,7 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rxdart_ext: ^0.2.5
+  rxdart_ext: ^0.3.0
   sqflite_common: ^2.5.3
   sqflite: ^2.3.2
   meta: ^1.7.0

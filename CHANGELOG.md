@@ -1,3 +1,7 @@
+## 2.8.0 - Aug 13, 2024
+
+*   Update `rxdart_ext: ^0.3.0` (~ `rxdart: ^0.28.0`).
+
 ## 2.7.0 - Mar 6, 2024
 
 *  Update dependencies: `sqflite: ^2.3.2` (implements `Database.readTransaction` method).
