@@ -18,7 +18,7 @@ jobs:
         with:
           channel: 'stable'
       # Setup Dart SDK with JWT token
-      - uses: dart-lang/setup-dart@a57a6c04cf7d4840e88432aad6281d1e125f0d46
+      - uses: dart-lang/setup-dart@cb7127289503113089d94a9c7247ada34feeb436
       # Minimal package setup and dry run checks.
       - name: Install dependencies
         run: flutter packages get
